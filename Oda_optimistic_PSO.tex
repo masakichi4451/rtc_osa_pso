@@ -1,0 +1,797 @@
+\documentclass[10pt, letterpaper]{IEEEtran}
+\usepackage[dvipdfmx]{color}
+\usepackage[dvipdfmx]{graphicx}
+
+% 日本語対応のCJKパッケージ
+\usepackage{CJKutf8}
+
+%\setlength{\textwidth}{17cm}
+%\setlength{\textheight}{25cm}
+%\setlength{\topmargin}{-1cm}
+%\setlength{\oddsidemargin}{-0.5cm}
+%\setlength{\evensidemargin}{1cm}
+%\setlength{\voffset}{-1cm}
+%\usepackage{flushend}
+\setlength\intextsep{0pt}
+\setlength\textfloatsep{0pt}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{cite}
+\usepackage{url}
+%\usepackage{showframe}
+\usepackage{subfigure}
+%\usepackage{subcaption}
+\usepackage{comment}
+\usepackage{diagbox}  % 表内でセルを斜めに分割するため．2024/12/18追加
+
+\usepackage{amssymb}
+\usepackage{xcolor} %色を変えるために追加
+% \usepackage{ulem} % 打ち消し線のため  % 2025/3/25 雑誌名にアンダーラインがつくし，もう不要なのでコメントアウト
+% \usepackage{amsthm} % Theoremと表示するため
+\usepackage{amsmath,algorithm,float,tabularx,amsfonts} % Algorithm書くため
+\usepackage{algpseudocode} % Algorithm書くため
+\usepackage{graphics} % \scaleboxを使うため
+\newcommand{\multiline}[1]{% 複数行に渡るときに左端を揃えるため
+    \begin{tabularx}{\dimexpr\linewidth-\ALG@thistlm}[t]{@{}X@{}}
+        #1
+    \end{tabularx}
+}
+\newcommand{\Step}[1]{\algrenewcommand{\alglinenumber}[1]{\textbf{Step ##1.} } #1} % AlgorithmでStep 1. と表示するため
+\newcommand{\Stepmini}[1]{\algrenewcommand{\alglinenumber}[1]{\textbf{Step 1-##1.} } #1} % AlgorithmでStep 1-1. と表示するため
+\newcommand{\NoNumber}{\algrenewcommand{\alglinenumber}[1]{\setcounter{ALG@line}{\numexpr##1-1} \ \ \ \ \ \ \ \ \ \ }} % Algorithmでインデントつきで改行するため
+\newcommand{\AdjustNumber}{\algrenewcommand{\alglinenumber}[1]{\setcounter{ALG@line}{\numexpr##1-2}}} % AlgorithmでStep番号を調整するため
+\newcommand{\StartLeft}{\algrenewcommand{\alglinenumber}[1]{\setcounter{ALG@line}{\numexpr##1-1}}} % Algorithmで数式後の文章の始まりを左に揃えるため
+% AlgorithmでRequireとEnsureをInputとOutputにする
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\newtheorem{thm}{Theorem} % Theoremと表示するため
+\newtheorem{lemma}{Lemma} % Lemmaと表示するため
+
+% \newtheorem{lemma}{Lemma}
+\newtheorem*{proof*}{Proof}
+% \newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newcommand{\argmin}{\mathop{\rm argmin}\limits}
+\renewcommand\thefootnote{\dag}
+%\lstset{
+%    basicstyle={\ttfamily\small}, %書体の指定
+%    frame=tRBl, %フレームの指定
+%    framesep=10pt, %フレームと中身（コード）の間隔
+%    breaklines=true, %行が長くなった場合の改行
+%    linewidth=15cm, %フレームの横幅
+%    lineskip=-0.5ex, %行間の調整
+%    tabsize=2 %Tabを何文字幅にするかの指定
+%}
+
+\newcommand\blue[1]{\textcolor{blue}{#1}}
+\newcommand\red[1]{\textcolor{red}{#1}}
+\newcommand\cyan[1]{\textcolor{cyan}{#1}}
+\newcommand\magenta[1]{\textcolor{magenta}{#1}}
+\newcommand\green[1]{\textcolor{green}{#1}}
+\newcommand\black[1]{\textcolor{black}{#1}}
+
+\allowdisplaybreaks % 数式がページをまたぐことを許可
+
+\bibliographystyle{IEEEtran} % bibtexのために追加
+
+\begin{document}
+
+\begin{CJK}{UTF8}{ipxm}
+
+\title{\huge \red{An Optimistic Synchronization Based Optimal Server Allocation Model for Delay-Sensitive Applications with Preventive Start-Time Optimization under Single-Server Failures}}
+
+\author{Masaki Oda~\IEEEmembership{Student Member,~IEEE}, Akio Kawabata, ~\IEEEmembership{Member,~IEEE}, and Eiji Oki, ~\IEEEmembership{Fellow,~IEEE}
+\thanks{This paper is an extended version of the conference paper~\cite{Oda_ICCCN2025} accepted by the 34th International Conference on Computer Communications and Networks (ICCCN 2025), Aug. 2025.}
+\thanks{Masaki Oda and Eiji Oki are with Graduate School of Informatics, Kyoto University, Kyoto 606-8501, Japan (e-mail: oda.masaki.87w@st.kyoto-u.ac.jp, oki@i.kyoto-u.ac.jp).
+
+Akio Kawabata is with the Department of Computer Science and Engineering, Toyohashi University of Technology, Aichi 441-8580, Japan
+(e-mail: kawabata.akio.oc@tut.jp).}
+}
+\maketitle
+
+% \vspace{-2cm}
+\begin{abstract}
+Real-time applications require low latency and event order guarantees.  
+Distributed server processing is effective for this purpose, and data consistency between servers is crucial.  
+Although existing models in previous work handle data consistency, they do not address server failures.  
+This paper proposes a server allocation model for a consistency-aware multi-server network for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
+The proposed model considers data consistency between servers and handles single-server failures with PSO.
+PSO determines the assignment to minimize the worst-case delay over all possible failure scenarios while avoiding service disruption for users connected to non-failed servers.  
+We formulate the proposed model as an integer linear programming (ILP) problem.  
+The decision version of the server allocation problem is proven to be NP-complete, and it becomes difficult to solve in a practical time when the problem size is large.  
+We develop two polynomial-time approximation algorithms with theoretical performance analysis. 
+Numerical results show that the proposed model outperforms start-time optimization in terms of the largest total delay and run-time optimization in terms of avoiding instability.  
+The results also show that the faster of our two developed algorithms achieves a speedup ranging from $2.26 \times 10^3$ to $4.37 \times 10^6$ times compared to the ILP approach, while the maximum delay is, on average, only 1.029 times the optimal value.
+The results indicate that the speedup effect becomes more significant as the number of users and servers increases.
+\end{abstract}
+% \vspace{-0.3cm}
+\begin{IEEEkeywords}
+  Server allocation, data consistency, preventive start-time optimization, server failure, approximation algorithm.
+\end{IEEEkeywords}
+
+% \vspace{-0.5cm}
+\section{Introduction}
+\label{sec:introduction}
+
+With the development of fifth-generation (5G) mobile networks~\cite{DOCOMO_5G}, the need for low latency in real-time applications such as ticket reservation systems and online gaming has increased.
+These applications also require event order to be preserved.
+Traditionally, centralized processing (CP) is used, where a central server manages event ordering.
+This method requires the central server to wait for the maximum delay from the most distant user to process events in sequence, resulting in significant delays.
+
+Kawabata~{\it et~al.}~\cite{2Kawabata2017} introduced a distributed server processing (DSP) approach that leverages edge computing~\cite{edge_26,edge_27,edge_28,edge_29}. 
+In this approach, each user connects to one distributed server. 
+Subsequently, each server forwards user-generated events to other servers, allowing them to store and manage these events, which is an additional step compared to centralized processing (CP). 
+Finally, each server sends the processing results back to the users. 
+Let $D_\mathrm{U}^{\max}$ and $D_\mathrm{S}^{\max}$ represent the maximum delays between servers and users and between servers, respectively. 
+These three steps take at most $D_\mathrm{U}^{\max}$, $D_\mathrm{S}^{\max}$, and $D_\mathrm{U}^{\max}$ time, respectively. 
+Thus, DSP incurs a total maximum delay of $2D_\mathrm{U}^{\max} + D_\mathrm{S}^{\max}$. 
+The authors~\cite{2Kawabata2017} addressed a server allocation method to minimize this total delay. 
+Similarly, the delay for CP can be expressed as $2D_\mathrm{U}^{\max}$. 
+Since each user connects to a nearby server in DSP, $D_\mathrm{U}^{\max}$ is smaller than in CP, reducing the total delay. 
+However, DSP does not consider transmission errors when servers forward events. 
+As a result, events received by different servers may vary, leading to inconsistent processing results being returned to users.
+
+The work in~\cite{KawabataICC2023,CMND} addressed a consistency-aware multi-server network design model (CMND) for delay-sensitive applications, addressing server data consistency.
+In this model, after events are forwarded in DSP, each main server verifies its status with nearby secondary servers, determines the correct status through a majority vote, and updates its status if necessary.
+This majority vote involves comparing the status of at least three servers, including the main server itself; the number of secondary servers $N_{\mathrm{SS}}$ must be at least two.
+This additional step takes $L^{\max}$ time, the maximum delay between the main server and its secondary servers.
+Let $L_i$ represent the delay for data consistency verification at server~$i$, and $L^{\max}$ be the maximum $L_i$ among all selected servers.
+$L_i$ is the time required for all secondary servers of server~$i$ to send their status to server~$i$, representing the maximum delay between server~$i$ and its secondary servers.
+Thus, the total delay in CMND is $2D_\mathrm{U}^{\max} + D_\mathrm{S}^{\max} + L^{\max}$.
+The server allocation problem for CMND involves selecting servers and determining the main-secondary server pairs to minimize the total delay, considering the number of secondary servers, the delays between servers, and the delays between servers and users.
+
+The authors in~\cite{KawabataICC2023,CMND} formulated the server allocation problem for CMND as an integer linear programming (ILP) problem. 
+While solving the ILP problem yields the optimal solution, it cannot solve it in polynomial time.
+The work did not address improving the computational complexity. 
+There is no known polynomial-time algorithm for solving the server allocation problem for CMND. 
+As the problem size increases, solving it within a practical time becomes challenging. 
+Network operators would benefit from a more time-efficient algorithm with polynomial complexity to enable faster computation than the ILP approach.
+
+Ito~{\it et~al.}~\cite{3Ito2018} showed that the decision version of the server selection problem for DSP is NP-complete.
+They addressed two polynomial-time approximation algorithms for the problem, which does not impose a server capacity constraint; each server has a sufficient computing capacity.
+One algorithm guarantees an approximate solution within 1.5 times the optimal value when the delays between servers and between servers and users satisfy the triangle inequality.
+The other provides an approximate solution within twice the optimal value when only the delays between servers satisfy the triangle inequality. However, these algorithms do not address data consistency checks between servers and thus do not apply to CMND.
+
+The work in~\cite{Oda_CMND2025} showed that the decision version of the server selection problem for CMND is NP-complete.
+They developed two polynomial-time approximation algorithms for the problem. It considers no server capacity constraints either as the same in~\cite{3Ito2018}.
+The approximation algorithms guarantee an approximate solution within three times the optimal value when the delays between servers satisfy the triangle inequality.
+
+Servers can fail for various reasons, including hardware malfunctions, software errors, and excessive load~\cite{5_9_8_Shi2016}. 
+Due to the geographical distribution and the complexity of managing and maintaining edge servers, they are more prone to failures than centralized cloud servers.
+When a server fails, the users connected to it must be reassigned to another server to restore service, which can affect the maximum total delay.
+The work in~\cite{5_9_Masuda2020} developed a distributed server allocation model for DSP against single-server failures. % Masuda論文から追加
+The server allocation problem for CMND handling server failures has not been thoroughly explored.
+Since single-server failures are more common than multiple simultaneous failures, this paper focuses on the scenario of single-server failures.
+
+One method to handle server allocation in the event of a single server failure is to first determine the optimal allocation without considering any failures and then decide on a reallocation after each failure occurs.
+More specifically, start-time optimization (SO) reassigns users connected to the failed server to other non-failed servers to minimize the total delay for that failure scenario. On the other hand, 
+run-time optimization (RO) reassigns all users to non-failed servers to minimize the total delay for that failure scenario.
+SO provides the optimal allocation when no failures occur.
+However, this start-time optimal allocation may not yield optimal solutions for other failure scenarios.
+Conversely, RO always finds the optimal allocation for each failure scenario, but it may reassign users to new servers even if their current server has not failed.
+This can lead to instability due to unnecessary disconnections.
+
+Another method to handle server allocation in the event of a single server failure is preventive start-time optimization (PSO). The original concept of PSO was introduced in the network optimization studies~\cite{5_9_13_Kamrul2010,OkiDRCN2014} to minimize network congestion against failures while suppressing service interruption.
+In PSO, users are preventively assigned to servers to minimize the largest total delay among all failure scenarios. 
+To avoid instability, as in SO, PSO does not allow users connected to non-failed servers to be reassigned to other non-failed servers when a server fails.
+% サービスの中断をなくし，全ての故障シナリオを考えた時の全体の遅延時間を最小化するためにはPSOが有効である．
+PSO effectively minimizes the largest total delay among all failure scenarios while avoiding service interruptions.
+
+Two questions arise: 
+% 1. モデルを開発することができるのか
+% 2. そういう問題に対する効率的なアルゴリズムがあるのか
+1) Can we develop a model for the server allocation problem for CMND with PSO against single-server failures (CMND-PSO)?
+2) Is there any efficient algorithm for the problem?
+
+This paper proposes a server allocation model for CMND with PSO against single-server failures.
+The proposed model preventively allocates users to servers and determines the secondary servers for each server to minimize the largest total delay among all failure scenarios.
+To suppress instability, the proposed model does not allow users connected to non-failed servers to be reallocated to other non-failed servers when a server fails.
+We formulate the proposed model as an ILP problem.
+We prove that the decision version of CMND-PSO is NP-complete.
+Since it is difficult to solve the problem in a practical time when the problem size is large, we introduce approximation algorithms with theoretical performance analysis.
+We denote $a$ as the maximum delay between a user and a server among all failure scenarios in the optimal solution and $b$ as the maximum delay between servers among all failure scenarios in the optimal solution.
+We also denote $c$ as the maximum delay between a server and its secondary servers among all failure scenarios in the optimal solution.
+We theoretically prove that the proposed approximation algorithms can obtain a solution within a constant factor of $2a+b+c$ and analyze the computation time.
+Numerical results show that the proposed server allocation model for CMND with PSO against a single failure outperforms SO in terms of the largest total delay and RO in terms of avoiding instability.
+The results also show that our approximation algorithms can obtain a solution in a practical time while the approximate value is close to the optimal value.
+
+This paper is an extended version of~\cite{Oda_ICCCN2025} with various additions, mainly described as follows.
+We extensively investigate existing studies on resource allocation, organization of event order, data consistency, and server failure, and clarify the differences from our work.
+We develop a faster approximation algorithm that speeds up our original approximation algorithm in the conference version~\cite{Oda_ICCCN2025}.
+We analyze the computational time complexity of the approximation algorithm.
+We conduct extensive numerical experiments incorporating the faster approximation algorithm. In particular, we examine two networks, each with an increased number of servers, and investigate how the performance of our proposed model changes as the number of users varies.
+We formulate the server allocation problem for SO and RO as ILP problems to evaluate the performance of CMND-PSO in numerical evaluations. We examine the differences in computation times between PSO and SO, and between PSO and RO, to highlight the computational characteristics of the proposed model.
+
+The rest of the paper is organized as follows.
+Section~\ref{sec:related_work} investigates the related works and states limitations of existing models.
+Section~\ref{sec:proposed_mode_cmnd_pso} presents the proposed model.
+Section~\ref{sec:NP-Completeness} proves that the decision version of CMND-PSO is NP-complete.
+Section~\ref{sec:approximation algorithms} develops two polynomial-time approximation algorithms for CMND-PSO with theoretical performance analysis.
+Section~\ref{sec:numerical_results} shows the numerical results.
+Finally, Section~\ref{sec:conclusion} concludes the paper.
+
+% \vspace{-0.3cm}
+\section{Related work and limitations of existing models}
+\label{sec:related_work}
+
+Our problem is related to the {\it $k$-center problem}~\cite{Center_2019}. 
+In the $k$-center problem, a set of users and a set of facilities are given, and the objective is to select a subset $X$ of at most $k$ facilities such that the maximum distance from any user to the nearest facility in $X$ is minimized. 
+The $k$-center problem is known to be NP-hard, but there exist polynomial-time 2-approximation algorithms~\cite{3_7_Gonzalez1985,3_8_Hochbaum1985} when the distances satisfy the triangle inequality. 
+Moreover, it has been shown that no polynomial-time $r$-approximation algorithm exists for any constant $r < 2$ unless P=NP~\cite{3_7_Gonzalez1985,3_8_Hochbaum1985}. 
+Unlike the $k$-center problem, our problem does not limit the number of facilities that can be selected. 
+% our problemではfacility同士のtransmission delayも考えるので，むやみにfacilityを増やすことはできない．
+However, since it also considers the transmission delay between facilities, we cannot arbitrarily increase the number of facilities.
+
+The {\it k-median problem}~\cite{3_12_3SAT} is also related to our problem. 
+In the $k$-median problem, a set of users and a set of facilities are provided, and the objective is to select a subset $X$ of at most $k$ facilities that minimizes the sum of distances between the users and their assigned facilities in $X$. 
+When the distances satisfy the triangle inequality, the best polynomial-time approximation ratio for this problem is $2.675 + \epsilon$, as shown by Byrka~{\it et~al}.~\cite{3_3'_Byrka2017}. 
+In contrast to the $k$-median problem, which minimizes the sum of distances, our problem focuses on minimizing the maximum delay.
+
+The {\it hub location problem}~\cite{Hub_Okelly1987} involves determining the placement of hubs and assigning non-hub nodes to minimize the transportation cost between node pairs. 
+This problem has been extensively explored in the contexts of transportation and telecommunication networks~\cite{3_1_Alumar2008,3_6_Farahani2013}. 
+A related variant, the {\it $k$-hub center problem}~\cite{HubCenter_Campbell2007}, focuses on selecting $k$ hubs to minimize the maximum distance between any two nodes~\cite{3_4_Campbell1994,3_12_Okelly1991}. 
+% our problemは，k-hub center probleのように2点間の距離を考えるのではなく，facility間のtransmission delayも踏まえた，各ユーザが起点・終点となる経路のtransmission delayを考慮する必要がある．
+In distinction from the $k$-hub center problem, our problem considers the transmission delay between facilities and focuses on minimizing the transmission delay of the paths where each user is the starting and ending point.
+
+% resource allocation についての研究
+% 川端さんがTNSM2025で，"Application placement for multiple clouds"というサブセクションで紹介したrelated work
+Studies~\cite{KawabataTSNM2025_19,KawabataTSNM2025_20,KawabataTSNM2025_21} addressed resource allocation.
+The work in~\cite{KawabataTSNM2025_19} conducted a comprehensive study on different resource placement strategies in virtualized networks, focusing on optimization factors such as latency, server load, network bandwidth, and the quantity of service chains.
+Study~\cite{KawabataTSNM2025_20} presented a method to optimize latency and reliability parameters, incorporating a mechanism to balance the trade-off between these two parameters.
+Study~\cite{KawabataTSNM2025_21} introduced resource allocation strategies that consider delays, focusing on scenarios where application providers distribute applications across multiple servers, and users have the flexibility to change their application providers.
+% これらの研究とは異なり，私たちの研究は，transmission delayの差を考慮して，eventを処理している．
+Unlike these studies, our study focuses on processing events while considering the differences in transmission delays.
+
+Research~\cite{KawabataTSNM2025_5,KawabataTNSM2025} focused on delay fairness, which corrects disorganized event order caused by communication delay differences.
+Delay fairness can be achieved through two methods: conservative synchronization and optimistic synchronization~\cite{KawabataTSNM2025_5}.
+The conservative synchronization corrects the order of events in advance, processing them in the same order as they occurred.
+In contrast, the optimistic synchronization processes events in the order they arrive and rolls back to correct the order if an earlier event arrives after processing.
+The work in~\cite{KawabataTNSM2025} developed a method that can switch between the conservative and the optimistic synchronization.
+Different from these studies, our research focuses on data consistency and server failures.
+In our work, we use conservative synchronization to correct event order while maintaining data consistency across all servers, similar to the approach in~\cite{CMND}.
+
+\begin{figure}[tb]
+  \begin{center}
+    \includegraphics[width=0.99\columnwidth]{./fig/mainSecondaryServerPairs_forSFNC_r1.pdf}
+  \end{center}
+  % \vspace{-0.4cm}
+  \caption{Example of main-secondary server pairs for CMND.}
+  \label{fig:mainSecondaryServerPairs}
+\end{figure}
+
+The model in~\cite{KawabataICC2023,CMND} studied the possibility of data synchronization failure between servers 
+by comparing the status of each server with that of other servers.
+The method for determining the main-secondary server pairs is as follows.
+% ------ 自分の以前の論文の内容 ------
+% For example, for selected servers as shown in Fig.~\ref{fig_mainSecondaryServerPairs}(a), the main and secondary server pairs when $N_{\mathrm{SS}}=2$ are as shown in Fig.~\ref{fig_mainSecondaryServerPairs}(b). 
+% When server~1 serves as a main server, servers ~2 and~3 are designated as the secondary servers, and the delays are 3 and 5, respectively, hence $L_1=5$. 
+% In server~1, it compares its status with those of servers~2 and~3 and determines the correct status by majority vote. 
+% If only server~1 has a different status, the status of servers~2 and~3 is determined to be correct, and the status of server~1 is modified. 
+% Similarly, $L_2=3$, $L_3=3$, and $L_4=5$.
+% Thus, we have $L^{\max}=5$; the delay for all servers to check data consistency is 5.
+% --------------------------------
+As an illustration, consider the selected servers depicted in Fig.~\ref{fig:mainSecondaryServerPairs}(a). When $N_{\mathrm{SS}}=2$, the main and secondary server pairs are shown in Fig.~\ref{fig:mainSecondaryServerPairs}(b). 
+For instance, if server~1 is the main server, servers~2 and~3 act as secondary servers with delays of 3 and 5, respectively, resulting in $L_1=5$. 
+Server~1 then compares its status with those of servers~2 and~3 and uses a majority vote to determine the correct status. 
+If server~1's status differs from the others, it adopts the status of servers~2 and~3. 
+Similarly, we have $L_2=3$, $L_3=3$, and $L_4=5$.
+Therefore, the maximum delay $L^{\max}$ for all servers to verify data consistency is 5.
+% \cite{KawabataICC2023,CMND}でのモデルは，サーバ間でのデータの同期に失敗することを考慮している．
+% しかし，サーバ自体の故障については考慮されていない．
+% 本研究はCMNDにおいて単一サーバ故障をPSOで考えるので，\cite{KawabataICC2023,CMND}でのモデルを適用することができない．
+% また，\cite{5_9_Masuda2020}でのモデルは，DSPにおいて単一サーバ故障をPSOで考えたものだが，サーバ間でのデータの同期に失敗することを考慮していない．
+% したがって，\cite{5_9_Masuda2020}でのモデルを適用することもできない．
+% 以下英訳
+  % The model in~\cite{KawabataICC2023,CMND} considers the possibility of data synchronization failure between servers.
+  However, this model does not consider server failures.
+  Since this study considers single-server failures in CMND with PSO, the model in~\cite{KawabataICC2023,CMND} cannot be applied.
+
+\begin{figure}[tb]
+  \begin{center}
+      %\begin{tabular}{c}
+      \includegraphics[width=0.99\columnwidth]{./fig/DSA_SOROPSO.pdf}
+  \end{center}
+    % \vspace{-0.4cm}
+  \caption{Example of distributed server allocation with SO, RO, and PSO.}
+  \label{fig:DSA_SOROPSO}
+\end{figure}
+
+% failure についての研究
+Several studies have investigated server failure~\cite{ImanakaTNSM27,ImanakaTNSM28,ImanakaTNSM29}.
+The work in~\cite{ImanakaTNSM27} addressed a task allocation approach in heterogeneous distributed computing system, considering the possibility of permanent failures in random nodes.
+The work in~\cite{ImanakaTNSM28} introduced methods for dynamically assigning virtual machines to physical machines (PMs) to enhance the power-efficiency of cloud systems, considering task deadlines and assuming the predicted failure times of PMs in advance.
+The work in~\cite{ImanakaTNSM29} developed a task (re-)allocation method in distributed computing systems with node failures.
+% 
+% これらの研究は，複数のtaskと複数の計算資源があった場合に，効率的に計算を行うためにどのtaskをどの計算資源に割り当てれば良いかということに取り組んでいる．
+% 一方で，私たちの研究では，delay-sensitive applicationsにおいて，地理的に離れた場所にある各サーバは十分な計算能力を保有しているという仮定のもとで，エンドユーザがアクションを起こしてから処理するまでの時間やユーザに処理結果を伝える時間を短くすることに焦点を当てている．
+% 以下英訳
+These studies focus on efficiently allocating tasks to computational resources when there are multiple tasks and multiple resources are available.
+In contrast to these works, our research focuses on minimizing the time from when an end user initiates an action to when the processing is completed and the results are communicated back to the user, under the assumption that each server, located in geographically dispersed areas, possesses sufficient computational capacity for delay-sensitive applications.
+
+The model in~\cite{5_9_Masuda2020} addressed single-server failures in DSP with PSO.
+Fig.~\ref{fig:DSA_SOROPSO} illustrates the distributed server allocation with SO, RO, and PSO.
+$f$ represents the failed server.
+When no server fails, $f = 0$, the total delay of SO is the smallest in feasible allocation.
+However, since SO can reassign users only if the users are connected to the failed server, the total delay of SO is larger than that of PSO when $f = 1$ and $2$.
+For example, in SO, since user~3 is assigned to server~2 when $f = 0$, user~3 has to be reassigned to server~2 when $f = 1$.
+Since the total delay is minimized under this condition when $f = 1$, the total delay is larger than that of PSO.
+Despite a value of $f$, the total delay of RO is always the smallest in feasible allocation.
+However, this causes instability when $f = 1$ and $2$.
+For example, in RO, user~3 is assigned to server~2 when $f = 0$, but user~3 is reassigned to server~3 when $f = 1$ while server~2 is not failed.
+PSO can suppress the total delay while avoiding instability by considering all failure scenarios when determining the allocation.
+However, the model in~\cite{5_9_Masuda2020} does not consider the possibility of data synchronization failure between servers.
+Therefore, the model cannot be applied either.
+
+\section{Proposed model: CMND-PSO}
+\label{sec:proposed_mode_cmnd_pso}
+
+\subsection{Problem definitions}
+
+We describe the problem definition of CMND-PSO. Consider a network described as an undirected graph $G = (V, E)$.
+Let $V$ be the set of nodes and $E$ be the set of edges.
+Let $V_{\rm{U}} \subseteq V$ and $V_{\rm{S}} = \{1, \cdots, |V_{\rm{S}}|\} \subseteq V$ denote the set of users and the set of potential server locations, where $|V_{\rm{S}}| \geq 2$, respectively.
+We assume that each server has sufficient computing capacity, i.e., there is no limit on the number of users that can be accommodated by each server.
+A user is denoted by $u \in V_{\rm{U}}$, and a server is denoted by $s \in V_{\rm{S}}$.
+It is noted that $V_{\rm{U}} \cup V_{\rm{S}} = V$ and $V_{\rm{U}} \cap V_{\rm{S}} = \emptyset$.
+Let $E_{\rm{U}} \subseteq E$ and $E_{\rm{S}} \subseteq E$ denote the set of edges connecting users and servers and the set of edges connecting servers, respectively.
+A edge between user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ is denoted by $(u,s) \in E_{\rm{U}}$.
+A edge between server~$s \in V_{\rm{S}}$ and server~$t \in V_{\rm{S}} \setminus \{s\}$ is denoted by $(s,t) \in E_{\rm{S}}$.
+It is noted that  $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
+This paper considers that at most one server fails at the same time.
+Let $F = \{0, 1, \cdots, |V_{\rm{S}}|\}$ denote the set of failure scenarios, where $f = 0 \in F$ indicates the scenario where no server fails and $f \in F \setminus \{0\}$ represents the scenario where server~$f$ fails.
+We assume that each server has sufficient computing capacity, i.e., there is no limit on the number of users that can be accommodated by each server.
+
+Let $d(u,s)$ and $d(s,t)$ denote the delay between user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ and the delay between server~$s \in V_{\rm{S}}$ and server~$t \in V_{\rm{S}} \setminus \{s\}$, respectively.
+We assume that $d(u,s) \geq 0$, $d(u,s) = d(s,u)$.
+Similarly, we assume that $d(s,t) \geq 0$, $d(s,t) = d(t,s)$, and $d(s,s) = 0$.
+We also assume that the delays between servers satisfy the triangle inequality, i.e., $d(s_1,s_2) + d(s_2,s_3) \geq d(s_1,s_3)$ for every triple of elements $s_1, s_2, s_3 \in V_{\rm{S}}$.
+% この後，Oda_CMNDと同じように，査読後に追加した部分とユーザには三角不等式仮定しなくていいことを述べるべき？
+Let $y_{sf}$ be a binary decision variable that takes one if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$ and zero otherwise.
+Let $x_{ijf}$ be a binary decision variable that takes one if edge $(i,j) \in E$ is used under failure scenario~$f \in F$ and zero otherwise.
+Let $z_{stf}$ be a binary decision variable that takes one if server~$s \in V_{\rm{S}}$ selects server~$t \in V_{\rm{S}} \setminus \{s\}$ as a secondary server under failure scenario~$f \in F$ and zero otherwise.
+It is clear that $x_{usf} \le y_{sf}$ for each pair of user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ under each failure scenario~$f \in F$.
+It is also apparent that $x_{stf} \le y_{sf}$ and $x_{stf} \le y_{tf}$ for each pair of servers $s \in V_{\rm{S}}$ and $t \in V_{\rm{S}} \setminus \{s\}$ under each failure scenario~$f \in F$.
+Let $D_{\mathrm{U}f}$ and $D_{\mathrm{S}f}$ denote the maximum values of $d(u,s)$ and $d(s,t)$, respectively, where $(u,s) \in E_{\rm{U}}$ and $(s,t) \in E_{\rm{S}}$ are used under failure scenario~$f \in F$.
+Let $L_f$ represent the maximum delay between each used server and the corresponding secondary servers under failure scenario~$f \in F$.
+Let $D$ denote the largest total delay of $2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f$ among all failure scenarios.
+We define CMND-PSO as an optimization problem to minimize $D$.
+% 
+\begin{table}[tb]
+    \centering
+    \caption{Given parameters and decision parameters of \blue{OSA-PSO}.}
+    \label{tbl:notation}
+    \begin{tabular}{p{1.3cm}|cp{5.4cm}}
+        \hline
+        \small
+        Given & $V$ & Set of nodes. \\
+        parameters & $V_{\rm{U}}$ & Set of users. \\
+        & $V_{\rm{S}}$ & Set of potential server locations. \\
+        & $E$ & Set of edges. \\
+        & $E_{\rm{U}}$ & Set of edges between users and servers. \\
+        & $E_{\rm{S}}$ & Set of edges between servers. \\
+        & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
+        & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
+        & $F$ & Set of failure scenarios, where $f = 0 \in F$ indicates the scenario where no server fails and $f \in F \setminus \{0\}$ represents the scenario where server~$f$ fails. \\
+        & \blue{$H_{\rm APL}$} & \red{Maximum status holding time of an aplication.} \\
+        & \blue{$H_s$} & \red{Maximum status holding time of server $s$.} \\ \hline
+        Decision parameters & $D$ & The largest total delay of \blue{$2D_{\mathrm{U}f}$} among all failure scenarios. \\
+        & $D_{\mathrm{U}f}$ & Maximum value of $d(u,s)$, where $(u,s) \in E_{\rm{U}}$ is used under failure scenario~$f \in F$. \\
+        & $x_{ijf}$ & Binary. $x_{ijf} = 1$ if edge $(i,j) \in E_{\rm U} \cup E_{\rm S} (=E)$ is used under failure scenario~$f \in F$; $x_{ijf} = 0$ otherwise. \\
+        & $y_{sf}$ & Binary. $y_{sf} = 1$ if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$; $y_{sf} = 0$ otherwise. \\ \hline
+    \end{tabular}
+\end{table}
+Table~\ref{tbl:notation} shows the given parameters and decision parameters of the problem.
+
+% \vspace{-0.5cm}
+\subsection{Formulation of optimization problem}
+The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an ILP problem as follows:
+\blue{
+\begin{subequations} \label{OSA-PSO}
+  \begin{align}
+  \text{Objective}&\text{ min}\quad D \label{OSA-PSO a} \\
+  \rm{s.t.} \quad
+  &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO b} \\
+  % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
+  &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
+  &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO d} \\
+  &2D_{\mathrm{U}f} \le D, \quad \forall f \in F \label{OSA-PSO e} \\
+  &x_{us0} \le x_{usf}, \notag \\
+  &\qquad \forall f \in F \setminus \{0\}, \; u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{OSA-PSO f} \\
+  &x_{usf}d(u,s) + x_{stf}d(s,t) \le \min(H_{\rm APL},H_s), \notag \\
+  &\qquad \forall s \in V_{\rm{S}}, (u,s) \in E_{\rm{U}}, (s,t) \in E_{\rm{S}}, f \in F \label{OSA-PSO g} \\
+  &y_{sf} \geq x_{usf}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO h} \\
+  &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO i} \\
+  &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO j} \\
+  &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO k} \\
+  &\cyan{\sum_{u \in V_{\rm{U}}} x_{usf} \geq y_{sf} , \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO l} \\
+  &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \; f \in F \label{OSA-PSO m} \\
+  &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \; f \in F \label{OSA-PSO n}
+  \end{align}
+\end{subequations}
+}
+% The optimization problem of CMND-PSO to minimize $D$ is formulated as an ILP problem as follows:
+% \begin{subequations} \label{single-failure-without-capacity}
+%   \begin{align}
+%   \text{Objective}&\text{ min}\quad D \label{SFNC a} \\
+%   \rm{s.t.} \quad
+%   &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{SFNC b} \\
+%   &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{SFNC d} \\
+%   &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{SFNC e} \\
+%   &x_{stf}d(s,t) \le D_{\mathrm{S}f}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC f} \\
+%   &z_{stf}d(s,t) \le L_f, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC g} \\
+%   &2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f \le D, \quad \forall f \in F \label{SFNC h} \\
+%   &x_{us0} \le x_{usf}, \notag \\
+%   &\qquad \forall f \in F \setminus \{0\}, \; u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{SFNC i} \\
+%   &y_{sf} \geq x_{usf}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{SFNC k} \\
+%   &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC l} \\
+%   &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC m} \\
+%   &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC n} \\
+%   &\sum_{s \in V_{\rm{S}} \setminus \{f\}} y_{sf} \geq N_{\rm{SS}} + 1, \quad \forall f \in F \label{SFNC o} \\
+%   &z_{stf} \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{SFNC p} \\
+%   &\sum_{t: \: (s,t) \in E_{\rm{S}}} z_{stf} = y_{sf} N_{\rm{SS}}, \notag \\
+%   &\qquad \forall f \in F, \; s \in V_{\rm{S}} \setminus \{f\} \label{SFNC q} \\ % 7/19(金)前田くんのミーティングで，j:の後スペース開けるらしい
+%   &\sum_{t: \: (s,t) \in E_{\rm{S}}} z_{stf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{SFNC r} \\
+%   &\sum_{s: \: (s,t) \in E_{\rm{S}}} z_{stf} = 0, \quad \mathrm{if} \; t = f, \; \forall f \in F \label{SFNC s} \\
+%   &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \; f \in F \label{SFNC t} \\
+%   &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \; f \in F \label{SFNC u} \\
+%   &z_{stf} \in \{0,1\}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F. \label{SFNC v}
+%   \end{align}
+% \end{subequations}
+
+% \vspace{-0.3cm}
+We explain the ILP problem in~\eqref{SFNC a}--\eqref{SFNC v}.
+Equation~\eqref{SFNC a} is the objective function, which minimizes the largest total delay among all failure scenarios.
+Equation~\eqref{SFNC b} states that each user is assigned to a server that does not fail under each failure scenario.
+Equation~\eqref{SFNC d} indicates that a failed server cannot host any user under each failure scenario.
+Equation~\eqref{SFNC e} calculates $D_{\mathrm{U}f}$, which is the maximum delay between connected users and servers under failure scenario~$f$.
+% $D_{\mathrm{U}f}$を定義したときに説明しているなら，which 以降は不要？→不要なら，\eqref{SFNC e}~\eqref{SFNC g}はそれぞれ~~を計算するって言うだけにする．
+Equation~\eqref{SFNC f} calculates $D_{\mathrm{S}f}$, which is the maximum delay between connected servers under failure scenario~$f$.
+Equation~\eqref{SFNC g} calculates $L_f$, which is the maximum delay between the main and secondary servers under failure scenario~$f$.
+Equation~\eqref{SFNC h} computes the largest total delay of $2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f$ among all failure scenarios.
+% あるサーバがあるfailure scenarioにおいて故障していない場合，どのサーバも故障していないscenarioにおいてそのサーバに接続していたユーザはそのサーバに接続し続ける．
+Equation~\eqref{SFNC i} states that if a server does not fail in a failure scenario, the users connected to the server in a scenario where no server fails continue to be connected to the server.
+Equation~\eqref{SFNC k} expresses that if a server accommodates one user, the server is used.
+Equations~\eqref{SFNC l}--\eqref{SFNC n} express $x_{stf} = y_{sf} \cdot y_{tf}$.
+% データの一貫性の確認のため，選ばれるサーバが少なくとも$N_{\rm{SS}} + 1$台であることを保証する．
+Equation~\eqref{SFNC o} indicates that in each failure scenario, at least $N_{\rm{SS}} + 1$ servers are selected to ensure data consistency. 
+Equation~\eqref{SFNC p} states that if an edge between servers $s$ and $t$ forms a main-secondary server pair, the edge is selected in failure scenario~$f$ satisfying $x_{stf} = 1$.
+Equation~\eqref{SFNC q} ensures that each selected surviving server selects $N_{\rm{SS}}$ secondary servers under each failure scenario.
+% 故障サーバはmain server, secondary serverとして選ばれない
+Equations~\eqref{SFNC r} and~\eqref{SFNC s} indicate that a failed server is neither selected as a main nor secondary server under each failure scenario.
+
+% 元の分散処理の定式化でy_ffが選ばれないようになってる？
+% zについても同様のこと考慮できてる？
+
+% \vspace{-0.3cm}
+\section{NP-completeness}
+\label{sec:NP-Completeness}
+
+We define the decision version of the server selection problem for CMND in PSO (D-CMND-PSO) as follows.
+\begin{definition}
+    Suppose that a set of available servers, each of which has a sufficient capacity, $V_{\rm{S}}$, a set of users, $V_{\rm{U}}$, the delays between servers, the delays between servers and users, the number $N_{\rm{SS}}$ of secondary servers per server,
+    a set of failure scenarios, $F$, where at most one server in $V_{\rm{S}}$ fails at the same time, and a number $h$ are given.
+    Is there any assignment of users to servers such that the largest total delay among all failure scenarios $w \leq h$, 
+    where $w_f$ is the total delay under failure scenario~$f \in F$ and $w = \max_{f \in F} w_f$?
+\end{definition}
+\begin{thm}
+D-CMND-PSO is NP-complete.
+\end{thm}
+\begin{proof}
+  First, we show that D-CMND-PSO is in NP.
+  % D-CMND-PSOのinstanceが与えられた時，その解がyes instanceかどうかを多項式時間で確認できる．
+  Given a certificate of any instance of D-CMND-PSO, we can verify whether the solution is yes in polynomial time.  % 大木先生に25/01/30に送っていただいた本を参考にした．その本は間違ってないから，それに倣っていたら良いはず．
+  For failure scenario~$f \in F$, it takes $O(|V_{\rm{U}}|)$ time to check whether each user is assigned to a server and to acquire the maximum delay between a user and its assigned server.
+  We compute the maximum delay between servers in $O(|V_{\rm{S}}|^2)$ time.
+  We also calculate the maximum delay between a server and its secondary servers in $O(|V_{\rm{S}}|^2)$ time.
+  Then, we calculate $w_f$ to confirm $w_f \leq h$ in $O(1)$ time.
+  Since the number of failure scenarios is $|V_{\rm{S}}|+1$, the whole time complexity is $O(|V_{\rm{S}}|(|V_{\rm{S}}|^2+|V_{\rm{U}}|))$.
+
+  Second, we prove that D-CMND-PSO is polynomial-time reducible from the 3-satisfiability problem (3-SAT), which is famous as an NP-complete problem~\cite{3_12_3SAT}. 
+  3-SAT is defined as follows:
+  {\it Given a set of $n$ boolean variables and $k$ clauses, where each clause is a disjunction of three literals, is there a truth assignment that satisfies all clauses?}
+
+  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-CMND-PSO such that the answer to $I$ is yes if and only if the answer to $J$ is yes. %M1前期火1L13参考にした
+  Fig.~\ref{fig:3SAT_SFNC} shows the schematic image of the construction.
+
+  \begin{figure}[!t]
+    \begin{center}
+      \includegraphics[width=0.8\columnwidth]{./fig/fig_3SAT_SFNC.pdf}
+    \end{center}
+      % \vspace{-0.3cm}
+    \caption{Graph $G$ corresponding to 3-SAT with three clauses, where $|V_{\rm U}|=3$ and $|V_{\rm S}|=2n+1=9$ with $n=4$.}
+    \label{fig:3SAT_SFNC}
+  \end{figure}
+
+  Consider that an instance $I$ of 3-SAT with variables $x_1, x_2,\cdots, x_n$ and clauses $C_1, C_2,\cdots, C_k$, where $k=O(n)$, is given.
+  From the instance, we construct an instance of D-CMND-PSO as follows.
+  We define $V_{\rm{S}} \coloneq \{x_1, x_2,\cdots, x_n, \overline{x_1},\overline{x_2},\cdots,\overline{x_n},z\}$ and $V_{\rm{U}} \coloneq \{C_1,C_2,\cdots,C_k\}$.
+  For each pair of servers $s, s'\in V_{\rm{S}}$, we define:
+  \begin{equation}
+    d(s, s')\coloneqq
+    \begin{cases}
+      \alpha & \text{if $\{s, s'\}\neq \{x_i,\overline{x_i}\}$ for any $i$,}\\
+      \beta& \text{otherwise,}
+    \end{cases}
+  \end{equation}
+  where $\alpha < \beta$. Furthermore, for each server~$s\in V_{\rm{S}}$ and each user~$u\in V_{\rm{U}}$, we define:
+  \begin{equation}
+    d(u,s)\coloneqq
+    \begin{cases}
+      \gamma & \text{if $s$ is a literal in $u$ or $s=z$,}\\
+      \delta& \text{otherwise,}
+    \end{cases}
+  \end{equation}
+  where $\gamma < \delta$.
+  We set $\alpha = 1, \beta = 2, \gamma = 1, \delta = 2$.
+  We construct graph $G$ with $k$ user nodes $C_i \in V_{\rm{U}}$ and $2n+1$ server nodes $x_i, \overline{x_i}, z \in V_{\rm{S}}$.
+  We also set $h=4$ and $N_{\mathrm{SS}} < \frac{|V_{\rm{S}}|-1}{2}$.
+
+  Assume that an instance $I$ of 3-SAT is yes.
+  Then, there exists a satisfying assignment $a$ such that $a: \{x_1,x_2,\cdots,x_n\} \rightarrow \{\mathrm{true,false}\}$ for $I$.
+  We define $X=\{x_i, i \in [1,n] | a(x_i)=\text{true}\}\cup\{\overline{x_i}, i \in [1,n] |a(x_i)=\text{false}\}$ as a set of servers selected from $V_{\rm{S}}$.
+  % 最大1つのサーバ故障に対して，3つの場合に分ける．
+  We consider three cases for at most one server failure.
+  First, if no server fails, namely, $f=0$,
+  we assign each user to one of the servers that are set to true in the corresponding clause; 
+  the maximum delay between a user and its assigned server in $X$ is one.
+  Moreover, the maximum delay between servers in $X$ is one because the set $X$ has either $x_i$ or $\overline{x_i}$ for every $i$.
+  Similarly, the maximum delay between main and secondary servers in $X$ is one because $N_{\mathrm{SS}} < \frac{|V_{\rm{S}}|-1}{2} = n$ is considered.
+  Therefore, the maximum delay $w_0$ is at most four.
+  Second, if a server in $X$ fails,
+  we reassign each user connected to the failed server to server~$z$.
+  In this case, the maximum delay is at most four because both delays between server~$z$ and other servers and delays between server~$z$ and users are one.
+  Third, if server~$z$ fails, 
+  we assign users to the same servers as in the case where no server fails.
+  Thus, the largest total delay among all failure scenarios is at most four, i.e, $w \leq h$.
+  Therefore, the corresponding instance $J$ of D-CMND-PSO is yes.
+
+  Conversely, assume that an instance $J$ of D-CMND-PSO is yes.
+  When server~$z$ fails, a set of servers $X'$ exists in which the largest total delay is at most four.
+  % i.e, \blue{the maximum delay between a user and its assigned server in $X'$ is one, the maximum delay between servers in $X'$ is one, and the maximum delay between main and secondary servers in $X'$ is one}.
+  This means that the maximum delay between a user and its assigned server in $X'$, the maximum delay between servers in $X'$, and the maximum delay between main and secondary servers in $X'$ are all one.
+  % $\max_{s,s'\in \blue{X'}}d(s,s') \leq 1$, $\max_{u\in U}d(u,\rho(u,\blue{X'}))\leq 1$, and $\max_{s \in \blue{X'}} d(s,\blue{\eta} (s,\blue{X'}^{(s)})) \leq 1$.
+  Hence, $X'$ involves either $x_i$ or $\overline{x_i}$ for every $i$.
+  When a server in $X'$ fails, the total delay is at most four if we reassign users connected to the failed server to server~$z$.
+  We set $x_i$ to be true if $x_i \in X'$ and false if $\overline{x_i} \in X'$.
+  Since the distance between each clause node and its nearest server node is within one, each clause is satisfied in the assignment.
+  Therefore, the corresponding instance $I$ of 3-SAT is yes.
+
+  Thus, D-CMND-PSO is NP-complete.
+\end{proof}
+
+% \vspace{-0.3cm}
+\section{Numerical results}
+\label{sec:numerical_results}
+We evaluate the proposed model and approximation algorithms.
+% 
+We use three network models, JPN Kanto region~\cite{JPN}, COST~239~\cite{COST}, and NSFNET~\cite{NSFNET}, in which potential server locations are shown in Fig.~\ref{fig:ServerLocation}.
+Servers are connected by the shortest path in each network model.
+For example, in COST~239, node~6 is connected to node~11 via node~9.
+For each network model, users are randomly placed within specific latitudes and longitudes, as shown in Fig.~\ref{fig:ServerLocation}.
+We model the delay as a linear function of the transmission distance, where the distance of 100~km corresponds to the delay of 0.5~ms, as in~\cite{KawabataICC2023,CMND}.
+We calculate the distances of edges between servers and edges between servers and users by using spherical trigonometry based on the latitude and longitude of each point, as in~\cite{12Imanaka2024}.
+We calculate the distance $d_\mathrm{AB}$ between two points A and B with longitude $x_\mathrm{A}$ and latitude $y_\mathrm{A}$ and longitude $x_\mathrm{B}$ and latitude $y_\mathrm{B}$ by:
+$d_\mathrm{AB} = R \arccos(\sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}))$,
+where $R$ is the equatorial radius.
+% 
+We conduct experiments on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
+We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
+%We implement our approximation algorithms in C++.
+We implement our algorithms in C++.
+
+% N_SSを2から４，ユーザ数を30から70まで10ずつ変化させて実行
+We implement the proposed ILP approach and our approximation algorithms by setting $N_{\rm{SS}}$ to two, three, and four and varying the number of users from 30 to 70 in increments of 10.
+% それぞれの設定において，n trailsを実行
+We run $n$ trials for each setting.
+We set $n$ to 20 for all numerical experiments.
+
+% \vspace{-0.3cm}
+\subsection{Evaluation of proposed model}
+We compare the proposed model with two baselines.
+We evaluate the performance when the number of users changes using the JPN Kanto region, COST~239, and NSFNET networks.
+
+\begin{figure*}[!t]
+  \begin{center}
+      \begin{tabular}{ccc}
+      \includegraphics[width=0.32\textwidth]{./fig/server_location_JPN_tight_fontsize18_SFNC.pdf} &
+      \includegraphics[width=0.32\textwidth]{./fig/server_location_COST_tight_fontsize18_SFNC.pdf} &
+      \includegraphics[width=0.32\textwidth]{./fig/server_location_NSFNET_tight_fontsize18_SFNC.pdf} \\
+      (a) JPN Kanto & (b) COST~239 & (c) NSFNET
+      \end{tabular}
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{Potential server locations at JPN Kanto, COST~239, and NSFNET.}
+  \label{fig:ServerLocation}
+\end{figure*}
+
+\subsubsection{Baselines}
+We introduce two baselines, SO and RO.
+These approach determine the assignment under the scenario where no server fails to minimize the total delay.
+The reassignment under each failure scenario is determined after the server fails.
+More specifically, SO reassigns the users connected to the failed server to non-failed servers such that the total delay under this failure scenario is minimized;
+RO reassigns all users to non-failed servers to minimize the total delay under this failure scenario.
+
+For SO and RO, we first solve the ILP problem formulated in~\cite{2Kawabata2017}, which determines the assignment under the scenario where no server fails to minimize the total delay.
+We obtain the assignment under the scenario where no server fails, which is expressed by $x^0_{us}$, $(u,s) \in E_{\rm{U}}$.
+
+
+For each failure scenario~$f \in F \setminus \{0\}$, the optimization problem with SO is formulated as follows:
+\blue{
+\begin{subequations} \label{SO}
+  \begin{align}
+  \text{Objective}&\text{ min}\quad D^f \label{SO a} \\
+  \rm{s.t.} \quad
+  % ------ 省略部分1開始 ------
+  & \eqref{OSA-PSO b}-\eqref{OSA-PSO d}, \; F = \{f\}, \label{OSA-SO b-g} \\
+  % ------ 省略部分1終了 ------
+  &2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f \le D^f, \label{OSA-SO h} \\
+  &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{OSA-SO i} \\
+  % ------ 省略部分2開始 ------
+  & \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{f\}. \label{OSA-SO g-n}
+  % ------ 省略部分2終了 ------
+  \end{align}
+\end{subequations}
+}
+% \begin{subequations} \label{SO}
+%   \begin{align}
+%   \text{Objective}&\text{ min}\quad D^f \label{SO a} \\
+%   \rm{s.t.} \quad
+%   % &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \label{SO b} \\
+%   % % &\red{\sum_{u \in V_{\rm{U}}} x_{usf} \le C_{s}, \quad \forall f \in F, \; s \in V_{\rm{S}} \setminus \{f\}} \label{SO c} \\
+%   % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \label{SO d} \\
+%   % &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \label{SO e} \\
+%   % &x_{stf}d(s,t) \le D_{\mathrm{S}f}, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO f} \\
+%   % &z_{stf}d(s,t) \le L_f, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO g} \\
+%   % ------ 省略部分1開始 ------
+%   & \eqref{SFNC b}-\eqref{SFNC g}, \; F = \{f\}, \label{SO b-g} \\
+%   % ------ 省略部分1終了 ------
+%   &2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f \le D^f, \label{SO h} \\
+%   &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{SO i} \\
+%   % % &\red{z_{st0} \le z_{stf},} \notag \\
+%   % % &\red{\quad \forall f \in F \setminus \{0\}, \; s,t \in V_{\rm{S}} \setminus \{f\}, (s,t) \in E_{\rm{S}}} \label{SO j} \\
+%   % &y_{sf} \geq x_{usf}, \quad \forall (u,s) \in E_{\rm{U}}, \label{SO k} \\
+%   % &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO l} \\
+%   % &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO m} \\
+%   % &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO n} \\
+%   % &\sum_{s \in V_{\rm{S}} \setminus \{f\}} y_{sf} \geq N_{\rm{SS}} + 1, \label{SO o} \\
+%   % &z_{stf} \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \label{SO p} \\
+%   % &\sum_{t: \: (s,t) \in E_{\rm{S}}} z_{stf} = y_{sf} N_{\rm{SS}}, \quad \forall s \in V_{\rm{S}} \setminus \{f\} \label{SO q} \\ % 7/19(金)前田くんのミーティングで，j:の後スペース開けるらしい
+%   % &\sum_{t: \: (s,t) \in E_{\rm{S}}} z_{stf} = 0, \quad \mathrm{if} \; s = f, \label{SO r} \\
+%   % &\sum_{s: \: (s,t) \in E_{\rm{S}}} z_{stf} = 0, \quad \mathrm{if} \; t = f, \label{SO s} \\
+%   % &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \label{SO t} \\
+%   % &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \label{SO u} \\
+%   % &z_{stf} \in \{0,1\}, \quad \forall (s,t) \in E_{\rm{S}}. \label{SO v}
+%   % ------ 省略部分2開始 ------
+%   & \eqref{SFNC k}-\eqref{SFNC v}, \; F = \{f\}. \label{SO k-v}
+%   % ------ 省略部分2終了 ------
+%   \end{align}
+% \end{subequations}
+  Equations~\eqref{SO b-g} and~\eqref{SO k-v} represent the constraints of~\eqref{SFNC b}--\eqref{SFNC g} and~\eqref{SFNC k}--\eqref{SFNC v} under $F = \{f\}$, respectively.
+  The formulation of~\eqref{SO a}--\eqref{SO k-v}, namely SO, is similar to that of~\eqref{SFNC a}--\eqref{SFNC v}, namely PSO, but there are some differences.
+  PSO dependently determines the assignment for all failure scenarios including the scenario where no server fails by solving the ILP problem of~\eqref{SFNC a}--\eqref{SFNC v}, where $x_{us0}$ in~\eqref{SFNC i} is a decision variable.
+  On the other hand, SO independently determines the assignment under the scenario where no server fails first and then determines the reassignment under each failure scenario by solving the ILP problem of~\eqref{SO a}--\eqref{SO k-v}, where $x^0_{us}$ in~\eqref{SO i} is given.
+  The optimization problem with RO is formulated by removing~\eqref{SO i} from~\eqref{SO a}--\eqref{SO k-v}.
+
+\subsubsection{Experiment setup and metrics}
+  Similarly to~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we evaluate the performance of the proposed model and the baselines by using the following metrics.
+  To compare PSO with SO, we consider the reduction ratio of the largest total delay of PSO against that of SO, which is defined as 
+  $\alpha = \frac{\max_{f \in F}D^f_{\rm SO} - D_{\rm PSO}}{\max_{f \in F}D^f_{\rm SO}}$.
+  We also consider the penalty of the total delay in PSO under the scenario where no server fails against that in SO, which is defined as
+  $\beta = \frac{D^0_{\rm PSO} - D^0_{\rm SO}}{D^0_{\rm SO}}$.
+
+  To compare PSO with RO, we consider the increase ratio of the largest total delay of PSO against that of RO, which is defined as
+  $\gamma = \frac{D_{\rm PSO} - \max_{f \in F}D^f_{\rm RO}}{\max_{f \in F}D^f_{\rm RO}}$.
+  If a user whose currently connected server does not fail is reassigned to another server, an unnecessary disconnection occurs.
+  Let $\nu_f$ be the ratio of the number of unnecessary disconnections to the number of users under failure scenario~$f \in F$.
+  % \muは平均として使いたいので，\nuに変更
+  The average ratio of the number of unnecessary disconnections to the number of users over all failure scenarios where a server fails is defined as 
+  $\nu = \frac{\sum_{f \in F \setminus \{0\}}\nu_f}{|F| - 1}$.
+
+\subsubsection{Evaluation}
+Figs.~\ref{fig:alpha_beta_JPN},~\ref{fig:alpha_beta_COST},~and~\ref{fig:alpha_beta_NSFNET} show the values of $\alpha$ and $\beta$ when the number of users changes in the JPN Kanto region, COST~239, and NSFNET networks, respectively.
+% average: alpha JPN:0.0686 COST:0.0364 NSFNET:0.0307 total:0.0452, beta JPN:0.0799 COST:0.0419 NSFNET:0.0362 total:0.0527
+We observe that $\alpha$ gradually increases as the number of users increases in JPN Kanto, indicating that PSO provides greater reductions in total delay than SO.
+The average value of $\alpha$ is 0.045, and the maximum value is 0.18 when $N_{\rm{SS}}=4$ and $|V_{\rm U}| = 30$ and  in COST~239.
+We observe that $\beta$ slightly decreases as the number of users increases in JPN Kanto, and that the average value of $\beta$ is 0.053 in total.
+
+\begin{figure}[tb]
+  \begin{center}
+      \includegraphics[width=0.8\columnwidth]{./fig/alpha_JPN_02_J_r1.pdf} \\
+      (a) $\alpha$ \\
+      \includegraphics[width=0.8\columnwidth]{./fig/beta_JPN_02_J_r1.pdf} \\
+      (b) $\beta$
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{Comparison of PSO with SO when the number of users changes in JPN Kanto region.}
+  \label{fig:alpha_beta_JPN}
+\end{figure}
+
+\begin{figure}[tb]
+  \begin{center}
+      \includegraphics[width=0.8\columnwidth]{./fig/alpha_COST_02_J_r1.pdf} \\
+      (a) $\alpha$ \\
+      \includegraphics[width=0.8\columnwidth]{./fig/beta_COST_02_J_r1.pdf} \\
+      (b) $\beta$
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{Comparison of PSO with SO when the number of users changes in COST~239.}
+  \label{fig:alpha_beta_COST}
+\end{figure}
+
+\begin{figure}[tb]
+  \begin{center}
+      \includegraphics[width=0.8\columnwidth]{./fig/alpha_NSFNET_02_J_r1.pdf} \\
+      (a) $\alpha$ \\
+      \includegraphics[width=0.8\columnwidth]{./fig/beta_NSFNET_02_J_r1.pdf} \\
+      (b) $\beta$
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{Comparison of PSO with SO when the number of users changes in NSFNET.}
+  \label{fig:alpha_beta_NSFNET}
+\end{figure}
+
+Table~\ref{tab:gamma_nu} shows the values of $\gamma$ and $\nu$ when the number of users changes in the JPN Kanto region, COST~239, and NSFNET networks, respectively.
+% average value \gamma: JPN:0.0170, COST:0.0299, NSFNET:0.0019, total:0.0163
+% We observe that $\gamma$ is 0.024, meaning that the largest total delay in PSO is only 2.4\% greater than in RO.
+We observe that $\gamma$ is 0.016, which means that the largest total delay in PSO is only 1.6\% greater than that in RO in total.
+% average value \nu: JPN:0.687, COST:0.654, NSFNET:0.550, total:0.630 
+The average value of $\nu$ is 0.63, which means that 63\% of users are unnecessarily disconnected on average in RO under each failure scenario, whereas PSO has no unnecessary disconnections.
+The value of $\nu$ increases as the number of users increases in all the networks, which indicates that the effect of PSO on avoiding instability becomes more significant as the number of users increases.
+\begin{table*}[t]
+  \caption{Comparison of PSO with RO when the number of users changes, where we express $\gamma = \gamma^\prime \times 10^{-2}$.}
+  \label{tab:gamma_nu}
+  % \vspace{-0.5cm}
+  \begin{center}
+  % \scalebox{0.90}{
+%    \scriptsize
+    \begin{tabular}{c|cccccc|cccccc|cccccc}
+      \hline
+      & \multicolumn{6}{c|}{JPN Kanto} & \multicolumn{6}{c|}{COST~239} & \multicolumn{6}{c}{NSFNET}\\ \cline{2-19}
+      & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c|}{$N_{\rm SS}\!=\!4$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c|}{$N_{\rm SS}\!=\!4$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!4$}\\ \cline{2-19}
+%      $|V_{\rm{U}}|$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$\\
+      \hspace{-0.25cm} $|V_{\rm{U}}|$ \hspace{-0.25cm} & $\gamma^\prime$ &  \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$\\
+      \hline
+      30 & 2.5 & \hspace{-0.25cm} 0.59 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.67 & 4.5 & \hspace{-0.25cm} 0.57 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.61 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.58 & 0.21 & \hspace{-0.25cm} 0.44 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.85 & \hspace{-0.25cm} 0.55 \\
+      40 & 2.7 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.66 & \hspace{-0.25cm} 1.6 & \hspace{-0.25cm} 0.67 & 5.2 & \hspace{-0.25cm} 0.60 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.64 & 0.08 & \hspace{-0.25cm} 0.47 & \hspace{-0.25cm} 0.45 & \hspace{-0.25cm} 0.50 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 0.59 \\
+      50 & 2.4 & \hspace{-0.25cm} 0.66 & \hspace{-0.25cm} 0.9 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.74 & 5.6 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 2.2 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.64 & 0.01 & \hspace{-0.25cm} 0.46 & \hspace{-0.25cm} 0.22 & \hspace{-0.25cm} 0.51 & \hspace{-0.25cm} 0.13 & \hspace{-0.25cm} 0.60 \\
+      60 & 2.7 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 1.3 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 1.0 & \hspace{-0.25cm} 0.73 & 5.6 & \hspace{-0.25cm} 0.63 & \hspace{-0.25cm} 2.1 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.67 & 0.06 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.26 & \hspace{-0.25cm} 0.53 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.61 \\
+      70 & 2.6 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 0.6 & \hspace{-0.25cm} 0.71 & 4.9 & \hspace{-0.25cm} 0.64 & \hspace{-0.25cm} 1.6 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.1 & \hspace{-0.25cm} 0.66 & 0.07 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.26 & \hspace{-0.25cm} 0.53 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.61 \\
+      100 & 2.3 & \hspace{-0.25cm} 0.68 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.71 & \hspace{-0.25cm} 0.4 & \hspace{-0.25cm} 0.71 & 5.8 & \hspace{-0.25cm} 0.64 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.68 & 0.04 & \hspace{-0.25cm} 0.49 & \hspace{-0.25cm} 0.15 & \hspace{-0.25cm} 0.55 & \hspace{-0.25cm} 0.04 & \hspace{-0.25cm} 0.64 \\
+      200 & 3.0 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 1.4 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 0.5 & \hspace{-0.25cm} 0.71 & 5.5 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 2.4 & \hspace{-0.25cm} 0.70 & 0.03 & \hspace{-0.25cm} 0.54 & \hspace{-0.25cm} 0.02 & \hspace{-0.25cm} 0.60 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.68 \\
+      300 & 3.4 & \hspace{-0.25cm} 0.71 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 0.7 & \hspace{-0.25cm} 0.70 & 6.1 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 2.6 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 2.5 & \hspace{-0.25cm} 0.71 & 0.03 & \hspace{-0.25cm} 0.54 & \hspace{-0.25cm} 0.02 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.69 \\
+      \hline
+    \end{tabular}
+  % } 
+  \end{center}
+  % \vspace{-0.1cm}
+\end{table*}
+
+We observe that it takes 93.8~[s] to solve~\eqref{SFNC a}--\eqref{SFNC v} for $N_{\rm{SS}}=2$ and $|V_{\rm U}|=30$ in COST~239.
+In the same situation, SO and RO take 0.187~[s] to determine the assignment under the scenario where no server fails.
+For each failure scenario, it takes $1.24 \times 10^{-2}$ and $9.64 \times 10^{-2}$~[s] for SO and RO, respectively, to determine the reassignment, 
+where the total computation time is 0.323~[s] and 1.25~[s] for SO and RO, respectively.
+Thus, PSO takes more time than SO and RO because PSO handles a larger problem size at once than SO and RO.
+RO takes more time than SO because RO reassigns all users, whereas SO reassigns only the users whose connected server fails under each failure scenario.
+
+In summary, the proposed model with PSO outperforms SO in terms of the largest total delay by considering all failure scenarios dependently, where the gain of $\alpha$ is 0.045 on average
+and 0.18 in the worst case for SO;
+the largest total delay of PSO is comparable to that of RO.
+PSO avoids instability caused by unnecessary disconnections, where, on average, 63\% of users are unnecessarily disconnected in RO for each failure scenario.
+
+
+% \vspace{-0.5cm}
+\section{Conclusion}
+\label{sec:conclusion}
+
+\bibliography{IEEEabrv,Oda_optimistic_PSO}
+
+\end{CJK}
+
+\end{document}
