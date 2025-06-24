@@ -329,44 +329,45 @@ PSO can suppress the total delay while avoiding instability by considering all f
 However, the model in~\cite{5_9_Masuda2020} does not consider the possibility of data synchronization failure between servers.
 Therefore, the model cannot be applied either.
 
-\section{Proposed model: CMND-PSO}
+\section{\blue{Proposed model: OSA-PSO}}
 \label{sec:proposed_mode_cmnd_pso}
 
 \subsection{Problem definitions}
 
-We describe the problem definition of CMND-PSO. Consider a network described as an undirected graph $G = (V, E)$.
-Let $V$ be the set of nodes and $E$ be the set of edges.
-Let $V_{\rm{U}} \subseteq V$ and $V_{\rm{S}} = \{1, \cdots, |V_{\rm{S}}|\} \subseteq V$ denote the set of users and the set of potential server locations, where $|V_{\rm{S}}| \geq 2$, respectively.
-We assume that each server has sufficient computing capacity, i.e., there is no limit on the number of users that can be accommodated by each server.
-A user is denoted by $u \in V_{\rm{U}}$, and a server is denoted by $s \in V_{\rm{S}}$.
-It is noted that $V_{\rm{U}} \cup V_{\rm{S}} = V$ and $V_{\rm{U}} \cap V_{\rm{S}} = \emptyset$.
-Let $E_{\rm{U}} \subseteq E$ and $E_{\rm{S}} \subseteq E$ denote the set of edges connecting users and servers and the set of edges connecting servers, respectively.
-A edge between user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ is denoted by $(u,s) \in E_{\rm{U}}$.
-A edge between server~$s \in V_{\rm{S}}$ and server~$t \in V_{\rm{S}} \setminus \{s\}$ is denoted by $(s,t) \in E_{\rm{S}}$.
-It is noted that  $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
-This paper considers that at most one server fails at the same time.
-Let $F = \{0, 1, \cdots, |V_{\rm{S}}|\}$ denote the set of failure scenarios, where $f = 0 \in F$ indicates the scenario where no server fails and $f \in F \setminus \{0\}$ represents the scenario where server~$f$ fails.
-We assume that each server has sufficient computing capacity, i.e., there is no limit on the number of users that can be accommodated by each server.
+\blue{
+We present the formal definition of CMND-PSO. Let the network be represented by an undirected graph $G = (V, E)$.
+Let $V$ denote the set of all nodes and $E$ the set of all edges in the network.
+Let $V_{\rm{U}} \subseteq V$ be the set of users, and let $V_{\rm{S}} \subseteq V$ be the set of potential server locations, where $|V_{\rm{S}}| \geq 2$.
+We can express $V_{\rm{S}}$ as $V_{\rm{S}} = \{1, \ldots, |V_{\rm{S}}|\}$.
+\red{We suppose that all servers possess ample computational resources, meaning there is no restriction on the number of users assigned to each server.}
+Let $u \in V_{\rm{U}}$ represent a user and $s \in V_{\rm{S}}$ represent a server.
+Note that $V_{\rm{U}} \cup V_{\rm{S}} = V$ and $V_{\rm{U}} \cap V_{\rm{S}} = \emptyset$.
+Let $E_{\rm{U}} \subseteq E$ be the set of edges between users and servers, and $E_{\rm{S}} \subseteq E$ be the set of edges between servers.
+An edge connecting a user $u \in V_{\rm{U}}$ to a server $s \in V_{\rm{S}}$ is represented as $(u,s) \in E_{\rm{U}}$.
+An edge connecting two distinct servers $s, t \in V_{\rm{S}}$ is represented as $(s, t) \in E_{\rm{S}}$.
+Note that  $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
+This paper assumes that no more than one server can fail simultaneously.
+Let $F = \{0, 1, \ldots, |V_{\rm{S}}|\}$ be the set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.
+}
 
-Let $d(u,s)$ and $d(s,t)$ denote the delay between user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ and the delay between server~$s \in V_{\rm{S}}$ and server~$t \in V_{\rm{S}} \setminus \{s\}$, respectively.
-We assume that $d(u,s) \geq 0$, $d(u,s) = d(s,u)$.
-Similarly, we assume that $d(s,t) \geq 0$, $d(s,t) = d(t,s)$, and $d(s,s) = 0$.
-We also assume that the delays between servers satisfy the triangle inequality, i.e., $d(s_1,s_2) + d(s_2,s_3) \geq d(s_1,s_3)$ for every triple of elements $s_1, s_2, s_3 \in V_{\rm{S}}$.
+\blue{
+Let $d(u,s)$ represent the delay from user $u \in V_{\rm{U}}$ to server $s \in V_{\rm{S}}$, and let $d(s,t)$ denote the delay between servers $s, t \in V_{\rm{S}}$ with $s \neq t$.
+We suppose $d(u,s) \geq 0$ and $d(u,s) = d(s,u)$ for all $u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$.
+In addition, we require that $d(s,t) \geq 0$ for all $s, t \in V_{\rm{S}}$, that the delays are symmetric, i.e., $d(s,t) = d(t,s)$, and that the delay from a server to itself is zero, i.e., $d(s,s) = 0$.
+% We also assume that the delays between servers satisfy the triangle inequality, i.e., $d(s_1,s_2) + d(s_2,s_3) \geq d(s_1,s_3)$ for every triple of elements $s_1, s_2, s_3 \in V_{\rm{S}}$. % 近似アルゴリズムは今回ないので不要
 % この後，Oda_CMNDと同じように，査読後に追加した部分とユーザには三角不等式仮定しなくていいことを述べるべき？
-Let $y_{sf}$ be a binary decision variable that takes one if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$ and zero otherwise.
-Let $x_{ijf}$ be a binary decision variable that takes one if edge $(i,j) \in E$ is used under failure scenario~$f \in F$ and zero otherwise.
-Let $z_{stf}$ be a binary decision variable that takes one if server~$s \in V_{\rm{S}}$ selects server~$t \in V_{\rm{S}} \setminus \{s\}$ as a secondary server under failure scenario~$f \in F$ and zero otherwise.
-It is clear that $x_{usf} \le y_{sf}$ for each pair of user~$u \in V_{\rm{U}}$ and server~$s \in V_{\rm{S}}$ under each failure scenario~$f \in F$.
-It is also apparent that $x_{stf} \le y_{sf}$ and $x_{stf} \le y_{tf}$ for each pair of servers $s \in V_{\rm{S}}$ and $t \in V_{\rm{S}} \setminus \{s\}$ under each failure scenario~$f \in F$.
-Let $D_{\mathrm{U}f}$ and $D_{\mathrm{S}f}$ denote the maximum values of $d(u,s)$ and $d(s,t)$, respectively, where $(u,s) \in E_{\rm{U}}$ and $(s,t) \in E_{\rm{S}}$ are used under failure scenario~$f \in F$.
-Let $L_f$ represent the maximum delay between each used server and the corresponding secondary servers under failure scenario~$f \in F$.
-Let $D$ denote the largest total delay of $2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f$ among all failure scenarios.
-We define CMND-PSO as an optimization problem to minimize $D$.
+Let $y_{sf}$ represent a binary variable that equals one if server $s \in V_{\rm{S}}$ is chosen in failure scenario $f \in F$, and zero otherwise.
+Let $x_{ijf}$ represent a binary variable that equals one if the edge $(i,j) \in E$ is utilized in failure scenario $f \in F$, and zero otherwise.
+For any user $u \in V_{\rm{U}}$ and server $s \in V_{\rm{S}}$, and for each failure scenario $f \in F$, the relation $x_{usf} \le y_{sf}$ holds. 
+Similarly, for any pair of servers $s, t \in V_{\rm{S}}$ with $s \neq t$, and for each $f \in F$, we have $x_{stf} \le y_{sf}$ and $x_{stf} \le y_{tf}$. 
+Let $D_{\mathrm{U}f}$ be the largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$.
+Let $D$ represent the largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios.
+We define OSA-PSO as an optimization problem to minimize $D$.
 % 
 \begin{table}[tb]
     \centering
     \caption{Given parameters and decision parameters of \blue{OSA-PSO}.}
-    \label{tbl:notation}
+    \label{tbl:notation_OSA-PSO}
     \begin{tabular}{p{1.3cm}|cp{5.4cm}}
         \hline
         \small
@@ -378,16 +379,17 @@ We define CMND-PSO as an optimization problem to minimize $D$.
         & $E_{\rm{S}}$ & Set of edges between servers. \\
         & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
         & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
-        & $F$ & Set of failure scenarios, where $f = 0 \in F$ indicates the scenario where no server fails and $f \in F \setminus \{0\}$ represents the scenario where server~$f$ fails. \\
-        & \blue{$H_{\rm APL}$} & \red{Maximum status holding time of an aplication.} \\
-        & \blue{$H_s$} & \red{Maximum status holding time of server $s$.} \\ \hline
-        Decision parameters & $D$ & The largest total delay of \blue{$2D_{\mathrm{U}f}$} among all failure scenarios. \\
-        & $D_{\mathrm{U}f}$ & Maximum value of $d(u,s)$, where $(u,s) \in E_{\rm{U}}$ is used under failure scenario~$f \in F$. \\
+        & $F$ & \blue{Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.} \\
+        & \blue{$H_{\rm APL}$} & \blue{Maximum status holding time of an aplication.} \\
+        & \blue{$H_s$} & \blue{Maximum status holding time of server $s$.} \\ \hline
+        Decision parameters & $D$ & \blue{The largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios.} \\
+        & $D_{\mathrm{U}f}$ & \blue{Largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$.} \\
         & $x_{ijf}$ & Binary. $x_{ijf} = 1$ if edge $(i,j) \in E_{\rm U} \cup E_{\rm S} (=E)$ is used under failure scenario~$f \in F$; $x_{ijf} = 0$ otherwise. \\
         & $y_{sf}$ & Binary. $y_{sf} = 1$ if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$; $y_{sf} = 0$ otherwise. \\ \hline
     \end{tabular}
 \end{table}
-Table~\ref{tbl:notation} shows the given parameters and decision parameters of the problem.
+Table~\ref{tbl:notation_OSA-PSO} summarises the given parameters and decision parameters used in the problem.
+}
 
 % \vspace{-0.5cm}
 \subsection{Formulation of optimization problem}
@@ -446,25 +448,22 @@ The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an I
 % \end{subequations}
 
 % \vspace{-0.3cm}
-We explain the ILP problem in~\eqref{SFNC a}--\eqref{SFNC v}.
-Equation~\eqref{SFNC a} is the objective function, which minimizes the largest total delay among all failure scenarios.
-Equation~\eqref{SFNC b} states that each user is assigned to a server that does not fail under each failure scenario.
-Equation~\eqref{SFNC d} indicates that a failed server cannot host any user under each failure scenario.
-Equation~\eqref{SFNC e} calculates $D_{\mathrm{U}f}$, which is the maximum delay between connected users and servers under failure scenario~$f$.
-% $D_{\mathrm{U}f}$を定義したときに説明しているなら，which 以降は不要？→不要なら，\eqref{SFNC e}~\eqref{SFNC g}はそれぞれ~~を計算するって言うだけにする．
-Equation~\eqref{SFNC f} calculates $D_{\mathrm{S}f}$, which is the maximum delay between connected servers under failure scenario~$f$.
-Equation~\eqref{SFNC g} calculates $L_f$, which is the maximum delay between the main and secondary servers under failure scenario~$f$.
-Equation~\eqref{SFNC h} computes the largest total delay of $2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f$ among all failure scenarios.
+\blue{
+The formulation given in~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} is described below.
+Equation~\eqref{OSA-PSO a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
+Equation~\eqref{OSA-PSO b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
+Equation~\eqref{OSA-PSO c} indicates that if a server fails in a failure scenario, it is used.
+% indicates that a failed server cannot host any user under each failure scenario.
+%
+Equation~\eqref{OSA-PSO d} computes $D_{\mathrm{U}f}$ as the maximum delay from any user to its assigned server in each failure scenario~$f$.
+Equation~\eqref{OSA-PSO e} calculates $D$ as the largest total delay of $2D_{\mathrm{U}f}$ across all possible failure scenarios.
 % あるサーバがあるfailure scenarioにおいて故障していない場合，どのサーバも故障していないscenarioにおいてそのサーバに接続していたユーザはそのサーバに接続し続ける．
-Equation~\eqref{SFNC i} states that if a server does not fail in a failure scenario, the users connected to the server in a scenario where no server fails continue to be connected to the server.
-Equation~\eqref{SFNC k} expresses that if a server accommodates one user, the server is used.
-Equations~\eqref{SFNC l}--\eqref{SFNC n} express $x_{stf} = y_{sf} \cdot y_{tf}$.
-% データの一貫性の確認のため，選ばれるサーバが少なくとも$N_{\rm{SS}} + 1$台であることを保証する．
-Equation~\eqref{SFNC o} indicates that in each failure scenario, at least $N_{\rm{SS}} + 1$ servers are selected to ensure data consistency. 
-Equation~\eqref{SFNC p} states that if an edge between servers $s$ and $t$ forms a main-secondary server pair, the edge is selected in failure scenario~$f$ satisfying $x_{stf} = 1$.
-Equation~\eqref{SFNC q} ensures that each selected surviving server selects $N_{\rm{SS}}$ secondary servers under each failure scenario.
-% 故障サーバはmain server, secondary serverとして選ばれない
-Equations~\eqref{SFNC r} and~\eqref{SFNC s} indicate that a failed server is neither selected as a main nor secondary server under each failure scenario.
+Equation~\eqref{OSA-PSO f} ensures that, for any server that remains operational in a given failure scenario, users originally assigned to that server when no failures occur are not reassigned elsewhere.
+Equation~\eqref{OSA-PSO g} ensures that, for every server $s \in V_{\rm{S}}$, the maximum status holding time does not surpass the minimum of $H_{\rm APL}$ and $H_s$.
+Equation~\eqref{OSA-PSO h} guarantees that a server is considered active if it serves at least one user.
+Equations~\eqref{OSA-PSO i}--\eqref{OSA-PSO k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
+Equation~\eqref{OSA-PSO l} ensures that at least one user is assigned to each server in each failure scenario.
+}
 
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
