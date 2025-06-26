@@ -337,13 +337,13 @@ We present the formal definition of CMND-PSO. Let the network be represented by 
 Let $V$ denote the set of all nodes and $E$ the set of all edges in the network.
 Let $V_{\rm{U}} \subseteq V$ be the set of users, and let $V_{\rm{S}} \subseteq V$ be the set of potential server locations, where $|V_{\rm{S}}| \geq 2$.
 We can express $V_{\rm{S}}$ as $V_{\rm{S}} = \{1, \ldots, |V_{\rm{S}}|\}$.
-\red{We suppose that all servers possess ample computational resources, meaning there is no restriction on the number of users assigned to each server.}
 Let $u \in V_{\rm{U}}$ represent a user and $s \in V_{\rm{S}}$ represent a server.
 Note that $V_{\rm{U}} \cup V_{\rm{S}} = V$ and $V_{\rm{U}} \cap V_{\rm{S}} = \emptyset$.
 Let $E_{\rm{U}} \subseteq E$ be the set of edges between users and servers, and $E_{\rm{S}} \subseteq E$ be the set of edges between servers.
 An edge connecting a user $u \in V_{\rm{U}}$ to a server $s \in V_{\rm{S}}$ is represented as $(u,s) \in E_{\rm{U}}$.
 An edge connecting two distinct servers $s, t \in V_{\rm{S}}$ is represented as $(s, t) \in E_{\rm{S}}$.
-Note that  $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
+Note that $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
+\cyan{Let $M_s$ be the maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.}
 This paper assumes that no more than one server can fail simultaneously.
 Let $F = \{0, 1, \ldots, |V_{\rm{S}}|\}$ be the set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.
 }
@@ -375,6 +375,7 @@ We define OSA-PSO as an optimization problem to minimize $D$.
         & $E$ & Set of edges. \\
         & $E_{\rm{U}}$ & Set of edges between users and servers. \\
         & $E_{\rm{S}}$ & Set of edges between servers. \\
+        & \cyan{$M_s$} & \cyan{Maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.} \\
         & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
         & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
         & $F$ & \blue{Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.} \\
@@ -398,6 +399,7 @@ The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an I
   \text{Objective}&\text{ min}\quad D \label{OSA-PSO a} \\
   \rm{s.t.} \quad
   &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO b} \\
+  &\cyan{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
   % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
   &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
   &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO d} \\
@@ -450,6 +452,7 @@ The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an I
 The formulation given in~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} is described below.
 Equation~\eqref{OSA-PSO a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
 Equation~\eqref{OSA-PSO b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
+\cyan{Equation~\eqref{OSA-PSO b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
 Equation~\eqref{OSA-PSO c} indicates that if a server fails in a failure scenario, it is used.
 % indicates that a failed server cannot host any user under each failure scenario.
 %
