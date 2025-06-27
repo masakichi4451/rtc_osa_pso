@@ -473,97 +473,95 @@ Equation~\eqref{OSA-PSO l} ensures that at least one user is assigned to each se
 \section{NP-completeness}
 \label{sec:NP-Completeness}
 
-We define the decision version of the server selection problem for CMND in PSO (D-CMND-PSO) as follows.
+\blue{
+We define the decision version of the OSA-based server allocation with PSO (D-OSA-PSO) as follows.
 \begin{definition}
-    Suppose that a set of available servers, each of which has a sufficient capacity, $V_{\rm{S}}$, a set of users, $V_{\rm{U}}$, the delays between servers, the delays between servers and users, the number $N_{\rm{SS}}$ of secondary servers per server,
-    a set of failure scenarios, $F$, where at most one server in $V_{\rm{S}}$ fails at the same time, and a number $h$ are given.
-    Is there any assignment of users to servers such that the largest total delay among all failure scenarios $w \leq h$, 
-    where $w_f$ is the total delay under failure scenario~$f \in F$ and $w = \max_{f \in F} w_f$?
+    Given a set of servers $V_{\rm{S}}$, a set of users $V_{\rm{U}}$, delay values between servers and between servers and users, the maximum number of users that can be assigned to each server $M_s$, a set of failure scenarios $F$, where at most one server in $V_{\rm{S}}$ may fail at any time, 
+    and the maximum status holding time $\min(H_{\rm APL},H_s)$.
+    % maximum status holding timeの制約を満たすuserの適切なサーバへの割り当ては存在しますか？
+    % 川端さんの論文の"appropriate"は，maximum status holding timeの制約を満たすuserの適切なサーバへの割り当ては存在しますか？という意味で使われていると思われる．ここではそれを明記した．
+    Is there a feasible allocation of users to servers such that the maximum status holding time is satisfied?
 \end{definition}
 \begin{thm}
-D-CMND-PSO is NP-complete.
+D-OSA-PSO is NP-complete.
 \end{thm}
+}
 \begin{proof}
-  First, we show that D-CMND-PSO is in NP.
-  % D-CMND-PSOのinstanceが与えられた時，その解がyes instanceかどうかを多項式時間で確認できる．
-  Given a certificate of any instance of D-CMND-PSO, we can verify whether the solution is yes in polynomial time.  % 大木先生に25/01/30に送っていただいた本を参考にした．その本は間違ってないから，それに倣っていたら良いはず．
-  For failure scenario~$f \in F$, it takes $O(|V_{\rm{U}}|)$ time to check whether each user is assigned to a server and to acquire the maximum delay between a user and its assigned server.
-  We compute the maximum delay between servers in $O(|V_{\rm{S}}|^2)$ time.
-  We also calculate the maximum delay between a server and its secondary servers in $O(|V_{\rm{S}}|^2)$ time.
-  Then, we calculate $w_f$ to confirm $w_f \leq h$ in $O(1)$ time.
-  Since the number of failure scenarios is $|V_{\rm{S}}|+1$, the whole time complexity is $O(|V_{\rm{S}}|(|V_{\rm{S}}|^2+|V_{\rm{U}}|))$.
+  \blue{
+  First, we show that D-OSA-PSO is in NP.
+  % D-OSA-PSOのinstanceが与えられた時，その解がyes instanceかどうかを多項式時間で確認できる．
+  Given a certificate of any instance of D-OSA-PSO, we can verify whether the solution is yes in polynomial time.  % 大木先生に25/01/30に送っていただいた本を参考にした．その本は間違ってないから，それに倣っていたら良いはず．
+  For each failure scenario $f \in F$, verifying that every user is allocated to a server and determining the maximum user-to-server delay can be accomplished in $O(|V_{\rm{U}}|)$ time.
+  We can verify if the constraint of the maximum status holding time is satisfied in $O(|V_{\rm{U}}||V_{\rm{S}}|)$ time by checking the delay between each user and its assigned server, and the delay between each pair of servers.
+  Since the number of failure scenarios is $|V_{\rm{S}}|+1$, the whole time complexity is $O(|V_{\rm{U}}||V_{\rm{S}}|^2)$.
+  }
 
-  Second, we prove that D-CMND-PSO is polynomial-time reducible from the 3-satisfiability problem (3-SAT), which is famous as an NP-complete problem~\cite{3_12_3SAT}. 
+  \blue{
+  Second, we prove that the 3-satisfiability problem (3-SAT), a well-known NP-complete problem~\cite{3_12_3SAT}, can be reduced to D-OSA-PSO in polynomial time. 
   3-SAT is defined as follows:
-  {\it Given a set of $n$ boolean variables and $k$ clauses, where each clause is a disjunction of three literals, is there a truth assignment that satisfies all clauses?}
+  {\it Given $n$ boolean variables and $k$ clauses, where each clause consists of three literals, does there exist an assignment of truth values to the variables such that every clause evaluates to true?}
+  }
 
-  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-CMND-PSO such that the answer to $I$ is yes if and only if the answer to $J$ is yes. %M1前期火1L13参考にした
-  Fig.~\ref{fig:3SAT_SFNC} shows the schematic image of the construction.
-
+  \blue{
+  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-OSA-PSO such that the answer to $I$ is yes if and only if the answer to $J$ is yes. %M1前期火1L13参考にした
+  A schematic diagram illustrating this construction is provided in Fig.~\ref{fig:3SAT_RTC}.
+  }
   \begin{figure}[!t]
     \begin{center}
-      \includegraphics[width=0.8\columnwidth]{./fig/tnsm/fig_3SAT_SFNC.pdf}
+      \includegraphics[width=0.8\columnwidth]{./fig/fig_3SAT_RTC.pdf}
     \end{center}
       % \vspace{-0.3cm}
-    \caption{Graph $G$ corresponding to 3-SAT with three clauses, where $|V_{\rm U}|=3$ and $|V_{\rm S}|=2n+1=9$ with $n=4$.}
-    \label{fig:3SAT_SFNC}
+    \caption{\blue{Graph $G$ corresponding to 3-SAT with three clauses.}}
+    \label{fig:3SAT_RTC}
   \end{figure}
 
-  Consider that an instance $I$ of 3-SAT with variables $x_1, x_2,\cdots, x_n$ and clauses $C_1, C_2,\cdots, C_k$, where $k=O(n)$, is given.
-  From the instance, we construct an instance of D-CMND-PSO as follows.
-  We define $V_{\rm{S}} \coloneq \{x_1, x_2,\cdots, x_n, \overline{x_1},\overline{x_2},\cdots,\overline{x_n},z\}$ and $V_{\rm{U}} \coloneq \{C_1,C_2,\cdots,C_k\}$.
-  For each pair of servers $s, s'\in V_{\rm{S}}$, we define:
-  \begin{equation}
-    d(s, s')\coloneqq
-    \begin{cases}
-      \alpha & \text{if $\{s, s'\}\neq \{x_i,\overline{x_i}\}$ for any $i$,}\\
-      \beta& \text{otherwise,}
-    \end{cases}
-  \end{equation}
-  where $\alpha < \beta$. Furthermore, for each server~$s\in V_{\rm{S}}$ and each user~$u\in V_{\rm{U}}$, we define:
-  \begin{equation}
-    d(u,s)\coloneqq
-    \begin{cases}
-      \gamma & \text{if $s$ is a literal in $u$ or $s=z$,}\\
-      \delta& \text{otherwise,}
-    \end{cases}
-  \end{equation}
-  where $\gamma < \delta$.
-  We set $\alpha = 1, \beta = 2, \gamma = 1, \delta = 2$.
-  We construct graph $G$ with $k$ user nodes $C_i \in V_{\rm{U}}$ and $2n+1$ server nodes $x_i, \overline{x_i}, z \in V_{\rm{S}}$.
-  We also set $h=4$ and $N_{\mathrm{SS}} < \frac{|V_{\rm{S}}|-1}{2}$.
+  \blue{
+  \begin{itemize}
+    \item Create a graph $G$ consisting of $k$ user nodes and $3k+1$ server nodes. The server nodes are consists of a server node $V_{\rm Z}$ and $3k$ server nodes grouped into $k$ sets, each containing three nodes $V_{ij}$ for $i = 1, 2, \cdots, k$ and $j = 1, 2, 3$, 
+    \item All server nodes are linked with edges.
+    \begin{itemize}
+      \item The length of edges between $V_{ij}$ and $V_{i'j'}$ are set to one whenever $i \neq i'$, and $V_{ij}$ and $V_{i'j'}$ are not negations to each other, which means that the edge represents two nodes corresponding to elements that have a compatible true assignment.
+      \item The length of edges between $V_{\rm Z}$ and $V_{ij}$ are set to one.
+      \item Otherwise, the length of edges are set to two.
+    \end{itemize}
+    \item Each user node is linked with edges that have a length of zero.
+  \end{itemize}
+  }
 
-  Assume that an instance $I$ of 3-SAT is yes.
-  Then, there exists a satisfying assignment $a$ such that $a: \{x_1,x_2,\cdots,x_n\} \rightarrow \{\mathrm{true,false}\}$ for $I$.
-  We define $X=\{x_i, i \in [1,n] | a(x_i)=\text{true}\}\cup\{\overline{x_i}, i \in [1,n] |a(x_i)=\text{false}\}$ as a set of servers selected from $V_{\rm{S}}$.
-  % 最大1つのサーバ故障に対して，3つの場合に分ける．
-  We consider three cases for at most one server failure.
-  First, if no server fails, namely, $f=0$,
-  we assign each user to one of the servers that are set to true in the corresponding clause; 
-  the maximum delay between a user and its assigned server in $X$ is one.
-  Moreover, the maximum delay between servers in $X$ is one because the set $X$ has either $x_i$ or $\overline{x_i}$ for every $i$.
-  Similarly, the maximum delay between main and secondary servers in $X$ is one because $N_{\mathrm{SS}} < \frac{|V_{\rm{S}}|-1}{2} = n$ is considered.
-  Therefore, the maximum delay $w_0$ is at most four.
-  Second, if a server in $X$ fails,
-  we reassign each user connected to the failed server to server~$z$.
-  In this case, the maximum delay is at most four because both delays between server~$z$ and other servers and delays between server~$z$ and users are one.
-  Third, if server~$z$ fails, 
-  we assign users to the same servers as in the case where no server fails.
-  Thus, the largest total delay among all failure scenarios is at most four, i.e, $w \leq h$.
-  Therefore, the corresponding instance $J$ of D-CMND-PSO is yes.
+  \blue{
+  We set the capacity of each server node $M_s$ to one to complete the D-OSA-PSO instance.
+  We set $\min(H_{\rm APL},H_s)$ to one for all servers $s \in V_{\rm{S}}$.
+  }
 
-  Conversely, assume that an instance $J$ of D-CMND-PSO is yes.
-  When server~$z$ fails, a set of servers $X'$ exists in which the largest total delay is at most four.
-  % i.e, \blue{the maximum delay between a user and its assigned server in $X'$ is one, the maximum delay between servers in $X'$ is one, and the maximum delay between main and secondary servers in $X'$ is one}.
-  This means that the maximum delay between a user and its assigned server in $X'$, the maximum delay between servers in $X'$, and the maximum delay between main and secondary servers in $X'$ are all one.
-  % $\max_{s,s'\in \blue{X'}}d(s,s') \leq 1$, $\max_{u\in U}d(u,\rho(u,\blue{X'}))\leq 1$, and $\max_{s \in \blue{X'}} d(s,\blue{\eta} (s,\blue{X'}^{(s)})) \leq 1$.
-  Hence, $X'$ involves either $x_i$ or $\overline{x_i}$ for every $i$.
-  When a server in $X'$ fails, the total delay is at most four if we reassign users connected to the failed server to server~$z$.
-  We set $x_i$ to be true if $x_i \in X'$ and false if $\overline{x_i} \in X'$.
-  Since the distance between each clause node and its nearest server node is within one, each clause is satisfied in the assignment.
-  Therefore, the corresponding instance $I$ of 3-SAT is yes.
+  \blue{
+  The D-OSA-PSO instance is feasible if and only if there exists a satisfiable 3-SAT assignment, which is shown below.
+  }
 
-  Thus, D-CMND-PSO is NP-complete.
+  \blue{
+  Suppose that there exists a true 3-SAT assignment. 
+  We consider three cases for at most one server failure in the following.
+  First, if server node $V_{\rm Z}$ fails,
+  we can choose $k$ nodes from $V_{ij}$, one corresponding to true assignment from each clause, which are all interconnected with edges of length one.
+  We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
+  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, the constraint of the maximum status holding time is satisfied.
+  Second, if a server node $V_{ij}$ fails,
+  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which satisfys the maximum status holding time constraint.
+  Third, if no server fails, 
+  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also satisfys the maximum status holding time constraint.
+  Hence, the maximum status holding time is satisfied in all failure scenarios, and the D-OSA-PSO instance is feasible.
+  }
+
+  \blue{
+  Conversely, assume that an instance of D-OSA-PSO is yes.
+  When server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
+  From the definition of $G$, these server nodes correspond to variables with compatible true assignments.
+  Thus, assigning the value true to the variables associated with these $k$ nodes ensures that every clause is satisfied.
+  Therefore, the corresponding instance of 3-SAT is yes.
+  }
+
+  \blue{
+  Since we have shown a polynomial-time reduction from 3-SAT to D-OSA-PSO, and D-OSA-PSO is in NP, it follows that D-OSA-PSO is NP-complete.
+  }
 \end{proof}
 
 % \vspace{-0.3cm}
