@@ -569,76 +569,257 @@ D-CMND-PSO is NP-complete.
 % \vspace{-0.3cm}
 \section{Numerical results}
 \label{sec:numerical_results}
-We evaluate the proposed model and approximation algorithms.
+\blue{
+We evaluate the proposed model in terms of OSA and PSO.
 % 
-We use three network models, JPN Kanto region~\cite{JPN}, COST~239~\cite{COST}, and NSFNET~\cite{NSFNET}, in which potential server locations are shown in Fig.~\ref{fig:ServerLocation}.
-Servers are connected by the shortest path in each network model.
-For example, in COST~239, node~6 is connected to node~11 via node~9.
-For each network model, users are randomly placed within specific latitudes and longitudes, as shown in Fig.~\ref{fig:ServerLocation}.
-We model the delay as a linear function of the transmission distance, where the distance of 100~km corresponds to the delay of 0.5~ms, as in~\cite{KawabataICC2023,CMND}.
-We calculate the distances of edges between servers and edges between servers and users by using spherical trigonometry based on the latitude and longitude of each point, as in~\cite{12Imanaka2024}.
-We calculate the distance $d_\mathrm{AB}$ between two points A and B with longitude $x_\mathrm{A}$ and latitude $y_\mathrm{A}$ and longitude $x_\mathrm{B}$ and latitude $y_\mathrm{B}$ by:
-$d_\mathrm{AB} = R \arccos(\sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}))$,
-where $R$ is the equatorial radius.
-% 
-We conduct experiments on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
+For our experiments, we consider two network models: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
+The potentail servers in each network are illustrated in Fig.~\ref{fig:ServerLocation}.
+In each network model, servers are interconnected using the shortest available path.
+For instance, in the COST~239 network, node~6 reaches node~11 through node~9.
+In each network, user locations are randomly generated within the latitude and longitude ranges indicated in Fig.~\ref{fig:ServerLocation}.
+The delay is assumed to increase linearly with transmission distance, with a reference value of 0.5~ms per 100~km, following the approach in~\cite{KawabataICC2023}.
+Distances for direct links between servers and links between servers and users are computed using spherical trigonometry based on geographic coordinates, as described in~\cite{12Imanaka2024}.
+The distance $d_\mathrm{AB}$ between two locations A and B, given their longitudes $x_\mathrm{A}$, $x_\mathrm{B}$ and latitudes $y_\mathrm{A}$, $y_\mathrm{B}$, is computed as follows:
+$d_\mathrm{AB} = R \arccos\left( \sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}) \right)$,
+where $R$ denotes the equatorial radius.
+All experiments are performed on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
 We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
-%We implement our approximation algorithms in C++.
-We implement our algorithms in C++.
-
-% N_SSを2から４，ユーザ数を30から70まで10ずつ変化させて実行
-We implement the proposed ILP approach and our approximation algorithms by setting $N_{\rm{SS}}$ to two, three, and four and varying the number of users from 30 to 70 in increments of 10.
-% それぞれの設定において，n trailsを実行
-We run $n$ trials for each setting.
-We set $n$ to 20 for all numerical experiments.
-
-% \vspace{-0.3cm}
-\subsection{Evaluation of proposed model}
-We compare the proposed model with two baselines.
-We evaluate the performance when the number of users changes using the JPN Kanto region, COST~239, and NSFNET networks.
-
-\begin{figure*}[!t]
+\begin{figure}[t]
   \begin{center}
-      \begin{tabular}{ccc}
-      \includegraphics[width=0.32\textwidth]{./fig/server_location_JPN_tight_fontsize18_SFNC.pdf} &
-      \includegraphics[width=0.32\textwidth]{./fig/server_location_COST_tight_fontsize18_SFNC.pdf} &
-      \includegraphics[width=0.32\textwidth]{./fig/server_location_NSFNET_tight_fontsize18_SFNC.pdf} \\
-      (a) JPN Kanto & (b) COST~239 & (c) NSFNET
+      \begin{tabular}{cc}
+      \includegraphics[width=0.47\columnwidth]{./fig/server_location_JPN_tight_fontsize22_OSA_r1.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/server_location_COST_tight_fontsize22_OSA_r1.pdf} \\
+      (a) JPN Kanto & (b) COST~239
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{Potential server locations at JPN Kanto, COST~239, and NSFNET.}
+  \caption{\red{Potential server locations at JPN Kanto and COST~239.}}
   \label{fig:ServerLocation}
-\end{figure*}
+\end{figure}
+}
 
-\subsubsection{Baselines}
-We introduce two baselines, SO and RO.
-These approach determine the assignment under the scenario where no server fails to minimize the total delay.
-The reassignment under each failure scenario is determined after the server fails.
-More specifically, SO reassigns the users connected to the failed server to non-failed servers such that the total delay under this failure scenario is minimized;
-RO reassigns all users to non-failed servers to minimize the total delay under this failure scenario.
-
-For SO and RO, we first solve the ILP problem formulated in~\cite{2Kawabata2017}, which determines the assignment under the scenario where no server fails to minimize the total delay.
-We obtain the assignment under the scenario where no server fails, which is expressed by $x^0_{us}$, $(u,s) \in E_{\rm{U}}$.
-
-
-For each failure scenario~$f \in F \setminus \{0\}$, the optimization problem with SO is formulated as follows:
 \blue{
-\begin{subequations} \label{SO}
+We conduct experiments using the proposed ILP formulation, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
+% server capacityの制限はなしで行う
+We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users.
+For each configuration, we perform $n$ independent trials.
+We set $n$ to 20 for all configurations
+and use the average of the results.
+}
+
+\subsection{\blue{Evaluation with maximum status holding time}}
+\label{subsec:Evaluation with maximum status holding time}
+
+\blue{
+We assess the delay and the computation time of OSA-PSO and the conventional scheme, which is CSA-based server allocation scheme with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
+CSA-PSO is formulated as follows:
+\begin{subequations} \label{CSA-PSO}
   \begin{align}
-  \text{Objective}&\text{ min}\quad D^f \label{SO a} \\
+  \text{Objective}&\text{ min}\quad D \label{CSA-PSO a} \\
   \rm{s.t.} \quad
-  % ------ 省略部分1開始 ------
-  & \eqref{OSA-PSO b}-\eqref{OSA-PSO d}, \; F = \{f\}, \label{OSA-SO b-g} \\
-  % ------ 省略部分1終了 ------
-  &2D_{\mathrm{U}f}+D_{\mathrm{S}f}+L_f \le D^f, \label{OSA-SO h} \\
-  &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{OSA-SO i} \\
-  % ------ 省略部分2開始 ------
-  & \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{f\}. \label{OSA-SO g-n}
-  % ------ 省略部分2終了 ------
+  & \eqref{OSA-PSO b}-\eqref{OSA-PSO e}, \eqref{OSA-PSO g}, \eqref{OSA-PSO i}-\eqref{OSA-PSO n} \label{CSA-PSO b} \\
+  &x_{stf}d(s,t) \le D_{\mathrm{S}f}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{CSA-PSO c} \\
+  &2D_{\mathrm{U}f} + D_{\mathrm{S}f} \leq D, \quad \forall f \in F. \label{CSA-PSO d}
   \end{align}
 \end{subequations}
 }
+
+\subsubsection{\blue{Evaluation with $H_{\rm APL}$}}
+
+\blue{
+For the evaluation focusing on the application maximum status holding time, we set $H_s$ to $H_{\rm APL}$.
+$H_{\rm APL}$ is set from 0.8~ms to 1.3~ms for JPN Kanto and from 7.0~ms to 12.0~ms for COST~239.
+}
+
+% ここからdelayの評価
+\blue{
+Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show how the delay varies when $H_{\rm APL}$ changes for both the proposed and conventional schemes in the JPN Kanto and COST~239 networks, respectively.
+The delay of OSA decreases as $H_{\rm APL}$ increases for both networks.
+When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for COST~239, the delay of OSA is lower than that of CSA.
+% h_aplが大きい時にCSAの何%以下と言う記述はしないでおく．（%があまり低くないし，あまりダラダラ書いてられない）
+}
+\begin{figure}[t]
+  \begin{center}
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hapl_JPN_numU30_15.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hapl_JPN_numU70_15.pdf} \\
+      (a) 30 users & (b) 70 users
+      \end{tabular}
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{\blue{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}}
+  \label{fig:delay_OSA_CSA_hapl_JPN}
+\end{figure}
+\begin{figure}[t]
+  \begin{center}
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hapl_COST_numU30_12.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hapl_COST_numU70_12.pdf} \\
+      (a) 30 users & (b) 70 users
+      \end{tabular}
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{\blue{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}}
+  \label{fig:delay_OSA_CSA_hapl_COST}
+\end{figure}
+\blue{
+When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO g}.
+In such cases, to satisfy~\eqref{OSA-PSO g}, some users must be assigned to more distant servers, which can help reduce delays between their assigned server and other servers.
+This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for OSA.
+Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
+This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
+As a result, when the farthest users in both the 30-user and 70-user cases are located at comparable distances from the servers, the maximum delay remains nearly unchanged.
+From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO scheme is effective in reducing delay when $H_{\rm APL}$ is large.
+}
+
+% ここからcomputation timeの評価
+\blue{
+Tables~\ref{tab:ComputationTime_OSA_CSA_hapl_JPN} and~\ref{tab:ComputationTime_OSA_CSA_hapl_COST} show computation time for OSA and CSA at JPN Kanto and COST~239, respectively.
+When $V_{\rm U} = 30, 40, 50$ at COST~239, the computation time of OSA is shorter than that of CSA.
+When $V_{\rm U} = 60, 70$ at COST~239, the computation time of OSA at $H_{\rm APL} = 8.0$~ms is longer than that of CSA but shorter than that of CSA at other $H_{\rm APL}$ values.
+In both networks, as the difference from a certain value of $H_{\rm APL}$ increases, the computation time tends to decrease.
+% 近似アルゴリズムを今回は考えないので，以下のブロックを追加
+For scenarios with up to 70 users, the computation time remains within a few minutes, depending on the network topology and the value of $H_{\rm APL}$. 
+In many practical situations, a short wait of several minutes before service initiation is permissible.
+Since user locations are typically known beforehand, this computation can be performed prior to launching the application, making the required processing time acceptable.
+}
+\begin{table}[t]
+  \caption{\blue{Conparison of computation time for each scheme at JPN Kanto.}}
+  \label{tab:ComputationTime_OSA_CSA_hapl_JPN}
+  \begin{center}
+    \begin{tabular}{c|cccccc|c}
+      \hline
+      $|V_{\rm{U}}|$ & \multicolumn{6}{c|}{OSA [s]} & CSA [s] \\ \cline{2-7}
+       & \multicolumn{6}{c|}{$H_{\rm{APL}}$ [ms]} & \\
+       & 0.8 & 0.9 & 1.0 & 1.1 & 1.2 & 1.3 &  \\
+      \hline
+      % \hline
+      30 & 1.2 &  4.7 &  5.9 &  4.4 &  1.5 &  1.2 &  4.3 \\
+      40 & 1.4 &  7.2 &  9.1 &  8.0 &  4.9 &  2.0 &  7.4 \\
+      50 & 1.7 & 10.0 & 13.6 & 11.5 &  9.2 &  5.3 & 10.4 \\
+      60 & 1.8 & 15.8 & 18.5 & 16.8 & 11.5 &  8.1 & 14.4 \\
+      70 & 1.6 & 24.7 & 28.7 & 24.5 & 19.6 & 12.5 & 22.4 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+\begin{table}[t]
+  \caption{\blue{Conparison of computation time for each scheme at COST~239.}}
+  \label{tab:ComputationTime_OSA_CSA_hapl_COST}
+  \begin{center}
+    \begin{tabular}{c|cccccc|c}
+      \hline
+      $|V_{\rm{U}}|$ & \multicolumn{6}{c|}{OSA [s]} & CSA [s] \\ \cline{2-7}
+       & \multicolumn{6}{c|}{$H_{\rm{APL}}$ [ms]} & \\
+       & 7.0 & 8.0 & 9.0 & 10.0 & 11.0 & 12.0 &  \\
+      \hline
+      % \hline
+      30 & 19.1 &  24.1 &  8.7 &  6.3 &  3.8 &  3.8 &  27.6 \\
+      40 & 33.2 &  44.8 & 17.9 & 11.0 &  5.9 &  3.8 &  47.3 \\
+      50 & 55.1 &  72.7 & 31.7 & 13.4 & 10.4 &  5.9 &  86.4 \\
+      60 & 67.8 & 150.7 & 61.6 & 22.6 & 18.9 & 10.9 &  84.9 \\
+      70 & 82.2 & 201.0 & 91.4 & 30.5 & 15.5 & 29.1 & 112.7 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsubsection{\blue{Evaluation with $H_s$}}
+\blue{
+For the evaluation focusing on the server maximum status holding time, we set $H_{\rm APL}$ to the maximum value of $H_s$.
+In this evaluation, we examine whether increasing the number of servers with higher $H_s$ values (i.e., greater memory resources) can lead to a reduction in delay.
+We set values of $H_s$ for JPN Kanto and COST~239 as shown in Table~\ref{tab:condition_hs_JPN_COST}.
+}
+\begin{table}[t]
+  \caption{\blue{Values of $H_s$ defined in JPN Kanto and COST~239.}}
+  \label{tab:condition_hs_JPN_COST}
+  \begin{center}
+    \begin{tabular}{c|c}
+      \hline
+      JPN-A & $0.8,\; \forall s \in V_{\rm S}$ \\
+      JPN-B & $0.8\,(s=1,3,4,5,7,8),\;1.0\,(s=2,6)$ \\
+      JPN-C & $0.8\,(s=1,3,5,7),\;1.0\,(s=2,4,6,8)$ \\
+      \hline
+      COST-A & $7.0,\; \forall s \in V_{\rm S}$ \\
+      COST-B & $7.0\,(s=1,2,3,4,5,7,8,9,10,11),\;9.0\,(s=6,8)$ \\
+      COST-C & $7.0\,(s=1,3,5,7,8,9,10,11),\;9.0\,(s=2,4,6,8)$ \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\blue{
+Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} show how the delay varies when $H_s$ changes for both the proposed and conventional schemes in the JPN Kanto and COST~239 networks, respectively.
+Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} demonstrate that increasing the number of servers with greater memory resources leads to lower delays. 
+These findings indicate that the proposed scheme leverages server memory resources efficiently to minimize delay.
+}
+\begin{figure}[t]
+  \begin{center}
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hs_JPN_numU30_15.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hs_JPN_numU70_15.pdf} \\
+      (a) 30 users & (b) 70 users
+      \end{tabular}
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{\blue{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}}
+  \label{fig:delay_OSA_CSA_hs_JPN}
+\end{figure}
+\begin{figure}[t]
+  \begin{center}
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hs_COST_numU30_12.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/delay_OSA_CSA_hs_COST_numU70_12.pdf} \\
+      (a) 30 users & (b) 70 users
+      \end{tabular}
+  \end{center}
+      % \vspace{-0.3cm}
+  \caption{\blue{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}}
+  \label{fig:delay_OSA_CSA_hs_COST}
+\end{figure}
+
+% \vspace{-0.3cm}
+\subsection{\blue{Evaluation of proposed PSO model}}
+\blue{
+To demonstrate the effectiveness of PSO, we compare our proposed model against two baseline approaches.
+We evaluate the performance as the number of users varies, using both the JPN Kanto region and COST~239 networks.
+We set $H_{\rm APL} = H_s = 1.1$~ms in JPN Kanto and $H_{\rm APL} = H_s = 10$~ms in COST~239.
+}
+
+\subsubsection{\blue{Baselines}}
+\blue{
+We consider two baseline methods: SO and RO.
+Both methods first compute the assignment where no server failures to minimize the total delay.
+When a server failure occurs, they then determine the reassignment for the affected scenario.
+}
+% Specifically, SO reallocates only those users whose server has failed to available servers to minimize the total delay in that scenario;
+% RO reassigns all users to non-failed servers to minimize the total delay under this failure scenario.
+
+\blue{
+For SO and RO, we first solve the ILP problem formulated as follows:
+\begin{subequations} \label{OSA-SO-f0}
+  \begin{align}
+  \text{Objective}&\text{ min}\quad 2D_{\mathrm{U}f} \label{OSA-SO-f0 a} \\
+  \rm{s.t.} \quad
+  & \eqref{OSA-PSO b}, \eqref{OSA-PSO d}, \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{0\}. \label{OSA-SO-f0 b}
+  \end{align}
+\end{subequations}
+This gives us the assignment under the scenario where no server fails, expressed as $x^0_{us}$ for $(u,s) \in E_{\rm{U}}$.
+}
+
+\blue{
+For the next step for SO, we solve the optimization problem for each failure scenario $f \in F \setminus \{0\}$ formulated as follows:
+\begin{subequations} \label{OSA-SO}
+  \begin{align}
+  \text{Objective}&\text{ min}\quad D^f \label{OSA-SO a} \\
+  \rm{s.t.} \quad
+  % ------ 省略部分開始 ------
+  & \eqref{OSA-PSO b}-\eqref{OSA-PSO d}, \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{f\} \label{OSA-SO b-d,g-n} \\
+  % ------ 省略部分終了 ------
+  &2D_{\mathrm{U}f} \le D^f \label{OSA-SO h} \\
+  &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\}. \label{OSA-SO i}
+  \end{align}
+\end{subequations}
 % \begin{subequations} \label{SO}
 %   \begin{align}
 %   \text{Objective}&\text{ min}\quad D^f \label{SO a} \\
@@ -673,118 +854,116 @@ For each failure scenario~$f \in F \setminus \{0\}$, the optimization problem wi
 %   % ------ 省略部分2終了 ------
 %   \end{align}
 % \end{subequations}
-  Equations~\eqref{SO b-g} and~\eqref{SO k-v} represent the constraints of~\eqref{SFNC b}--\eqref{SFNC g} and~\eqref{SFNC k}--\eqref{SFNC v} under $F = \{f\}$, respectively.
-  The formulation of~\eqref{SO a}--\eqref{SO k-v}, namely SO, is similar to that of~\eqref{SFNC a}--\eqref{SFNC v}, namely PSO, but there are some differences.
-  PSO dependently determines the assignment for all failure scenarios including the scenario where no server fails by solving the ILP problem of~\eqref{SFNC a}--\eqref{SFNC v}, where $x_{us0}$ in~\eqref{SFNC i} is a decision variable.
-  On the other hand, SO independently determines the assignment under the scenario where no server fails first and then determines the reassignment under each failure scenario by solving the ILP problem of~\eqref{SO a}--\eqref{SO k-v}, where $x^0_{us}$ in~\eqref{SO i} is given.
-  The optimization problem with RO is formulated by removing~\eqref{SO i} from~\eqref{SO a}--\eqref{SO k-v}.
+Equation~\eqref{OSA-SO b-d,g-n} enforces the same constraints as~\eqref{OSA-PSO b}--\eqref{OSA-PSO d} and~\eqref{OSA-PSO g}--\eqref{OSA-PSO n}, applied for the single failure scenario $F = \{f\}$.
+While the SO formulation closely resembles that of PSO, there are notable distinctions between the two approaches.
+In PSO, the assignments for all failure scenarios including the scenario with no server failure are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO a}--\eqref{OSA-PSO n}, treating $x_{us0}$ in~\eqref{OSA-PSO f} as a variable to be determined.
+In contrast, SO first computes the assignment for the no-failure scenario by solving the ILP formulation~\eqref{OSA-SO-f0 a}--\eqref{OSA-SO-f0 b}, and subsequently, for each failure scenario, determines the reassignment by solving the ILP formulation~\eqref{OSA-SO a}--\eqref{OSA-SO i}, using the previously obtained $x^0_{us}$ in~\eqref{OSA-SO i} as a given parameter.
+For RO, the optimization problem for each failure scenario $f \in F \setminus \{0\}$ is formulated in the same way as SO, except that constraint~\eqref{OSA-SO i} is omitted from~\eqref{OSA-SO a}--\eqref{OSA-SO i}.
+}
 
-\subsubsection{Experiment setup and metrics}
-  Similarly to~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we evaluate the performance of the proposed model and the baselines by using the following metrics.
-  To compare PSO with SO, we consider the reduction ratio of the largest total delay of PSO against that of SO, which is defined as 
-  $\alpha = \frac{\max_{f \in F}D^f_{\rm SO} - D_{\rm PSO}}{\max_{f \in F}D^f_{\rm SO}}$.
-  We also consider the penalty of the total delay in PSO under the scenario where no server fails against that in SO, which is defined as
-  $\beta = \frac{D^0_{\rm PSO} - D^0_{\rm SO}}{D^0_{\rm SO}}$.
+\subsubsection{\blue{Experiment setup and metrics}}
+\blue{
+Following the approach in~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we assess the performance of the proposed model and baseline methods using the metrics described below.
+To evaluate the benefit of PSO over SO, we define the reduction ratio of the largest total delay achieved by PSO compared to SO as
+$\alpha = \frac{\max_{f \in F}D^f_{\rm SO} - D_{\rm PSO}}{\max_{f \in F}D^f_{\rm SO}}$.
+We further evaluate the extent to which PSO increases the total delay in the no-failure scenario compared to SO. This penalty is calculated as
+$\beta = \frac{D^0_{\rm PSO} - D^0_{\rm SO}}{D^0_{\rm SO}}$.
+}
 
-  To compare PSO with RO, we consider the increase ratio of the largest total delay of PSO against that of RO, which is defined as
-  $\gamma = \frac{D_{\rm PSO} - \max_{f \in F}D^f_{\rm RO}}{\max_{f \in F}D^f_{\rm RO}}$.
-  If a user whose currently connected server does not fail is reassigned to another server, an unnecessary disconnection occurs.
-  Let $\nu_f$ be the ratio of the number of unnecessary disconnections to the number of users under failure scenario~$f \in F$.
-  % \muは平均として使いたいので，\nuに変更
-  The average ratio of the number of unnecessary disconnections to the number of users over all failure scenarios where a server fails is defined as 
-  $\nu = \frac{\sum_{f \in F \setminus \{0\}}\nu_f}{|F| - 1}$.
+\blue{
+To evaluate the performance of PSO relative to RO, we define the increase ratio of the largest total delay under PSO compared to RO as
+$\gamma = \frac{D_{\rm PSO} - \max_{f \in F}D^f_{\rm RO}}{\max_{f \in F}D^f_{\rm RO}}$.
+An unnecessary disconnection is defined as the reassignment of a user to a different server when their original server remains operational.
+For each failure scenario $f \in F$, let $\nu_f$ denote the proportion of users experiencing such unnecessary disconnections.
+% \muは平均として使いたいので，\nuに変更
+The average proportion of users who experience unnecessary disconnections, calculated across all failure scenarios, is given by
+$\nu = \frac{\sum_{f \in F \setminus \{0\}}\nu_f}{|F| - 1}$.
+}
 
-\subsubsection{Evaluation}
-Figs.~\ref{fig:alpha_beta_JPN},~\ref{fig:alpha_beta_COST},~and~\ref{fig:alpha_beta_NSFNET} show the values of $\alpha$ and $\beta$ when the number of users changes in the JPN Kanto region, COST~239, and NSFNET networks, respectively.
-% average: alpha JPN:0.0686 COST:0.0364 NSFNET:0.0307 total:0.0452, beta JPN:0.0799 COST:0.0419 NSFNET:0.0362 total:0.0527
-We observe that $\alpha$ gradually increases as the number of users increases in JPN Kanto, indicating that PSO provides greater reductions in total delay than SO.
-The average value of $\alpha$ is 0.045, and the maximum value is 0.18 when $N_{\rm{SS}}=4$ and $|V_{\rm U}| = 30$ and  in COST~239.
-We observe that $\beta$ slightly decreases as the number of users increases in JPN Kanto, and that the average value of $\beta$ is 0.053 in total.
+\subsubsection{\blue{Evaluation}}
+\blue{
+Figs.~\ref{fig:OSA_alpha_beta_JPN} and~\ref{fig:OSA_alpha_beta_COST} illustrate how $\alpha$ and $\beta$ vary as the number of users increases in the JPN Kanto region and COST~239 networks, respectively.
+% average: alpha JPN:0.1956 COST:0.0070 total:0.1013, beta JPN:0.3829 COST:0.1048 total:0.2439
+It can be seen that $\alpha$ tends to grow as the number of users increases in both networks, suggesting that PSO achieves larger reductions in total delay compared to SO as the user count rises.
+On average, $\alpha$ is 0.10, with the highest observed value for a failure scenario at one trial being 0.41 in JPN Kanto.
+It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ in the JPN Kanto, with the overall average value of $\beta$ being 0.24.
+}
 
 \begin{figure}[tb]
   \begin{center}
-      \includegraphics[width=0.8\columnwidth]{./fig/alpha_JPN_02_J_r1.pdf} \\
-      (a) $\alpha$ \\
-      \includegraphics[width=0.8\columnwidth]{./fig/beta_JPN_02_J_r1.pdf} \\
-      (b) $\beta$
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/alpha_JPN_hapl_1.1_025.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/beta_JPN_hapl_1.0_05.pdf} \\
+      (a) $\alpha$ & (b) $\beta$
+      \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{Comparison of PSO with SO when the number of users changes in JPN Kanto region.}
-  \label{fig:alpha_beta_JPN}
+  \caption{\blue{Evalutaion of PSO with SO when the number of users varies in JPN Kanto region.}}
+  \label{fig:OSA_alpha_beta_JPN}
 \end{figure}
 
 \begin{figure}[tb]
   \begin{center}
-      \includegraphics[width=0.8\columnwidth]{./fig/alpha_COST_02_J_r1.pdf} \\
-      (a) $\alpha$ \\
-      \includegraphics[width=0.8\columnwidth]{./fig/beta_COST_02_J_r1.pdf} \\
-      (b) $\beta$
+      \begin{tabular}{cc}
+      \includegraphics[width=0.46\columnwidth]{./fig/alpha_COST_hapl_1.1_001.pdf} &
+      \includegraphics[width=0.46\columnwidth]{./fig/beta_COST_hapl_10.0_025.pdf} \\
+      (a) $\alpha$ & (b) $\beta$
+      \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{Comparison of PSO with SO when the number of users changes in COST~239.}
-  \label{fig:alpha_beta_COST}
+  \caption{\blue{Evalutaion of PSO with SO when the number of users varies in COST~239.}}
+  \label{fig:OSA_alpha_beta_COST}
 \end{figure}
 
-\begin{figure}[tb]
+\blue{
+Table~\ref{tab:OSA-PSO_gamma_nu} presents the results for $\gamma$ and $\nu$ as the number of users varies in both the JPN Kanto region and COST~239 networks.
+% average value \gamma: JPN:4.267*10e-4, COST:0, total:2.134*10e-4
+It is found that the average value of $\gamma$ is $2.1 \times 10^{-4}$, indicating that the largest total delay under PSO exceeds that of RO by only 0.021\% overall.
+% average value \nu: JPN:0.448, COST:0.378, total:0.413
+On average, $\nu$ is 0.41, indicating that 41\% of users experience unnecessary disconnections per failure scenario when using RO, while PSO completely eliminates such disconnections.
+As the number of users grows in both networks, $\nu$ also rises, suggesting that PSO becomes increasingly effective at preventing instability with larger users.
+}
+\begin{table}[t]
+  \caption{\blue{Evaluation of PSO with RO when the number of users varies.}}
+  \label{tab:OSA-PSO_gamma_nu}
   \begin{center}
-      \includegraphics[width=0.8\columnwidth]{./fig/alpha_NSFNET_02_J_r1.pdf} \\
-      (a) $\alpha$ \\
-      \includegraphics[width=0.8\columnwidth]{./fig/beta_NSFNET_02_J_r1.pdf} \\
-      (b) $\beta$
-  \end{center}
-      % \vspace{-0.3cm}
-  \caption{Comparison of PSO with SO when the number of users changes in NSFNET.}
-  \label{fig:alpha_beta_NSFNET}
-\end{figure}
-
-Table~\ref{tab:gamma_nu} shows the values of $\gamma$ and $\nu$ when the number of users changes in the JPN Kanto region, COST~239, and NSFNET networks, respectively.
-% average value \gamma: JPN:0.0170, COST:0.0299, NSFNET:0.0019, total:0.0163
-% We observe that $\gamma$ is 0.024, meaning that the largest total delay in PSO is only 2.4\% greater than in RO.
-We observe that $\gamma$ is 0.016, which means that the largest total delay in PSO is only 1.6\% greater than that in RO in total.
-% average value \nu: JPN:0.687, COST:0.654, NSFNET:0.550, total:0.630 
-The average value of $\nu$ is 0.63, which means that 63\% of users are unnecessarily disconnected on average in RO under each failure scenario, whereas PSO has no unnecessary disconnections.
-The value of $\nu$ increases as the number of users increases in all the networks, which indicates that the effect of PSO on avoiding instability becomes more significant as the number of users increases.
-\begin{table*}[t]
-  \caption{Comparison of PSO with RO when the number of users changes, where we express $\gamma = \gamma^\prime \times 10^{-2}$.}
-  \label{tab:gamma_nu}
-  % \vspace{-0.5cm}
-  \begin{center}
-  % \scalebox{0.90}{
-%    \scriptsize
-    \begin{tabular}{c|cccccc|cccccc|cccccc}
+    \begin{tabular}{c|cc|cc}
       \hline
-      & \multicolumn{6}{c|}{JPN Kanto} & \multicolumn{6}{c|}{COST~239} & \multicolumn{6}{c}{NSFNET}\\ \cline{2-19}
-      & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c|}{$N_{\rm SS}\!=\!4$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c|}{$N_{\rm SS}\!=\!4$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!2$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!3$} & \multicolumn{2}{c}{$N_{\rm SS}\!=\!4$}\\ \cline{2-19}
-%      $|V_{\rm{U}}|$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$\\
-      \hspace{-0.25cm} $|V_{\rm{U}}|$ \hspace{-0.25cm} & $\gamma^\prime$ &  \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$ & \hspace{-0.25cm} $\gamma^\prime$ & \hspace{-0.25cm} $\nu$\\
+      & \multicolumn{2}{c|}{JPN Kanto} & \multicolumn{2}{c}{COST~239} \\ \cline{2-5}
+      $|V_{\rm{U}}|$ & $\gamma$ & $\nu$ & $\gamma$ & $\nu$ \\
       \hline
-      30 & 2.5 & \hspace{-0.25cm} 0.59 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.67 & 4.5 & \hspace{-0.25cm} 0.57 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.61 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.58 & 0.21 & \hspace{-0.25cm} 0.44 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.85 & \hspace{-0.25cm} 0.55 \\
-      40 & 2.7 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.66 & \hspace{-0.25cm} 1.6 & \hspace{-0.25cm} 0.67 & 5.2 & \hspace{-0.25cm} 0.60 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.65 & \hspace{-0.25cm} 1.9 & \hspace{-0.25cm} 0.64 & 0.08 & \hspace{-0.25cm} 0.47 & \hspace{-0.25cm} 0.45 & \hspace{-0.25cm} 0.50 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 0.59 \\
-      50 & 2.4 & \hspace{-0.25cm} 0.66 & \hspace{-0.25cm} 0.9 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 1.2 & \hspace{-0.25cm} 0.74 & 5.6 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 2.2 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.64 & 0.01 & \hspace{-0.25cm} 0.46 & \hspace{-0.25cm} 0.22 & \hspace{-0.25cm} 0.51 & \hspace{-0.25cm} 0.13 & \hspace{-0.25cm} 0.60 \\
-      60 & 2.7 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 1.3 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 1.0 & \hspace{-0.25cm} 0.73 & 5.6 & \hspace{-0.25cm} 0.63 & \hspace{-0.25cm} 2.1 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.67 & 0.06 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.26 & \hspace{-0.25cm} 0.53 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.61 \\
-      70 & 2.6 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 0.6 & \hspace{-0.25cm} 0.71 & 4.9 & \hspace{-0.25cm} 0.64 & \hspace{-0.25cm} 1.6 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.1 & \hspace{-0.25cm} 0.66 & 0.07 & \hspace{-0.25cm} 0.48 & \hspace{-0.25cm} 0.26 & \hspace{-0.25cm} 0.53 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.61 \\
-      100 & 2.3 & \hspace{-0.25cm} 0.68 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.71 & \hspace{-0.25cm} 0.4 & \hspace{-0.25cm} 0.71 & 5.8 & \hspace{-0.25cm} 0.64 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.68 & 0.04 & \hspace{-0.25cm} 0.49 & \hspace{-0.25cm} 0.15 & \hspace{-0.25cm} 0.55 & \hspace{-0.25cm} 0.04 & \hspace{-0.25cm} 0.64 \\
-      200 & 3.0 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 1.4 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 0.5 & \hspace{-0.25cm} 0.71 & 5.5 & \hspace{-0.25cm} 0.67 & \hspace{-0.25cm} 2.3 & \hspace{-0.25cm} 0.70 & \hspace{-0.25cm} 2.4 & \hspace{-0.25cm} 0.70 & 0.03 & \hspace{-0.25cm} 0.54 & \hspace{-0.25cm} 0.02 & \hspace{-0.25cm} 0.60 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.68 \\
-      300 & 3.4 & \hspace{-0.25cm} 0.71 & \hspace{-0.25cm} 1.5 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 0.7 & \hspace{-0.25cm} 0.70 & 6.1 & \hspace{-0.25cm} 0.69 & \hspace{-0.25cm} 2.6 & \hspace{-0.25cm} 0.72 & \hspace{-0.25cm} 2.5 & \hspace{-0.25cm} 0.71 & 0.03 & \hspace{-0.25cm} 0.54 & \hspace{-0.25cm} 0.02 & \hspace{-0.25cm} 0.62 & \hspace{-0.25cm} 0.05 & \hspace{-0.25cm} 0.69 \\
+      30 & $3.8 \times 10^{-4}$ & 0.42 & $0.0$ & 0.34 \\
+      40 & $4.9 \times 10^{-4}$ & 0.43 & $0.0$ & 0.37 \\
+      50 & $4.9 \times 10^{-4}$ & 0.44 & $0.0$ & 0.40 \\
+      60 & $3.8 \times 10^{-4}$ & 0.47 & $0.0$ & 0.37 \\
+      70 & $3.8 \times 10^{-4}$ & 0.48 & $0.0$ & 0.41 \\
       \hline
     \end{tabular}
-  % } 
   \end{center}
-  % \vspace{-0.1cm}
-\end{table*}
+\end{table}
 
-We observe that it takes 93.8~[s] to solve~\eqref{SFNC a}--\eqref{SFNC v} for $N_{\rm{SS}}=2$ and $|V_{\rm U}|=30$ in COST~239.
-In the same situation, SO and RO take 0.187~[s] to determine the assignment under the scenario where no server fails.
-For each failure scenario, it takes $1.24 \times 10^{-2}$ and $9.64 \times 10^{-2}$~[s] for SO and RO, respectively, to determine the reassignment, 
-where the total computation time is 0.323~[s] and 1.25~[s] for SO and RO, respectively.
-Thus, PSO takes more time than SO and RO because PSO handles a larger problem size at once than SO and RO.
-RO takes more time than SO because RO reassigns all users, whereas SO reassigns only the users whose connected server fails under each failure scenario.
+\blue{
+It is found that solving the PSO formulation~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} for $|V_{\rm U}|=30$ in COST~239 requires 6.33~[s].
+Under the same conditions, SO and RO need $2.96 \times 10^{-2}$~[s] to compute the initial assignment without failures.
+For each failure scenario, the reassignment step takes $3.92 \times 10^{-3}$~[s] for SO and $2.39 \times 10^{-2}$~[s] for RO, resulting in total computation times of 0.073~[s] for SO and 0.293~[s] for RO.
+These results indicate that PSO requires more computational time than SO and RO, as it solves a larger-scale optimization problem simultaneously.
+Additionally, RO is slower than SO because it reassigns all users in each failure scenario, whereas SO only reallocates users whose servers have failed.
+}
 
-In summary, the proposed model with PSO outperforms SO in terms of the largest total delay by considering all failure scenarios dependently, where the gain of $\alpha$ is 0.045 on average
-and 0.18 in the worst case for SO;
-the largest total delay of PSO is comparable to that of RO.
-PSO avoids instability caused by unnecessary disconnections, where, on average, 63\% of users are unnecessarily disconnected in RO for each failure scenario.
+\cyan{
+% この段落は最終版では外して，extended versionで追加してもいいかも．
+% \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
+We also conducte the proposed model and two baseline methods by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
+In this case, SO does not yield a feasible solution for $H_{\rm APL} \leq 1.0$ in JPN Kanto and $H_{\rm APL} \leq 9$ in COST~239.
+% これは，maximum status holding timeの制約が厳しくなった際に，SOよりもPSOの方が柔軟に対応することができることを示している．
+This indicates that PSO can adapt more flexibly than SO when the maximum status holding time constraint becomes stricter.
+}
 
+\blue{
+Overall, the proposed PSO model achieves a lower largest total delay than SO by jointly optimizing across all failure scenarios, with an average improvement $\alpha$ of 0.10 and up to 0.41 in the worst case.
+The largest total delay under PSO is nearly equivalent to that of RO.
+Furthermore, PSO effectively eliminates instability due to unnecessary user reassignments, whereas RO results in an average of 41\% of users being unnecessarily reassigned per failure scenario.
+}
 
 % \vspace{-0.5cm}
 \section{Conclusion}
