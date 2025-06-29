@@ -234,7 +234,7 @@ Let $E_{\rm{U}} \subseteq E$ be the set of edges between users and servers, and 
 An edge connecting a user $u \in V_{\rm{U}}$ to a server $s \in V_{\rm{S}}$ is represented as $(u,s) \in E_{\rm{U}}$.
 An edge connecting two distinct servers $s, t \in V_{\rm{S}}$ is represented as $(s, t) \in E_{\rm{S}}$.
 Note that $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
-\blue{Let $M_s$ be the maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.}
+Let $M_s$ be the maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.
 This paper assumes that no more than one server can fail simultaneously.
 Let $F = \{0, 1, \ldots, |V_{\rm{S}}|\}$ be the set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.
 
@@ -264,7 +264,7 @@ We define OSA-PSO as an optimization problem to minimize $D$.
         & $E$ & Set of edges. \\
         & $E_{\rm{U}}$ & Set of edges between users and servers. \\
         & $E_{\rm{S}}$ & Set of edges between servers. \\
-        & \blue{$M_s$} & \blue{Maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.} \\
+        & $M_s$ & Maximum number of users that can be assigned to server $s \in V_{\rm{S}}$. \\
         & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
         & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
         & $F$ & Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$. \\
@@ -286,7 +286,7 @@ The optimization problem of OSA-PSO to minimize $D$ is formulated as an ILP prob
   \text{Objective}&\text{ min}\quad D \label{OSA-PSO_a} \\
   \rm{s.t.} \quad
   &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO_b} \\
-  &\blue{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO_b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
+  &\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F \label{OSA-PSO_b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
   % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO_c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
   &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO_c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
   &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO_d} \\
@@ -337,7 +337,7 @@ The optimization problem of OSA-PSO to minimize $D$ is formulated as an ILP prob
 The formulation given in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is described below.
 Equation~\eqref{OSA-PSO_a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
 Equation~\eqref{OSA-PSO_b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
-\blue{Equation~\eqref{OSA-PSO_b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
+Equation~\eqref{OSA-PSO_b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.
 Equation~\eqref{OSA-PSO_c} indicates that if a server fails in a failure scenario, it is used.
 % indicates that a failed server cannot host any user under each failure scenario.
 %
@@ -357,48 +357,39 @@ Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each se
 \section{NP-completeness}
 \label{sec:NP-Completeness}
 
-\blue{
 We define the decision version of the OSA-based server allocation with PSO (D-OSA-PSO) as follows.
 \begin{definition}
-    Given a set of servers $V_{\rm{S}}$, a set of users $V_{\rm{U}}$, delay values between servers and between servers and users, the maximum number of users that can be assigned to each server $M_s\cyan{, s \in V_{\rm{S}}}$, a set of failure scenarios $F$, where at most one server in $V_{\rm{S}}$ may fail at any time, 
-    and the maximum status holding \cyan{times, $H_{\rm APL}$ and $H_s$ of an application and server $s \in V_{\rm{S}}$, respectively, 
-    is} there a feasible allocation of users to servers such that \cyan{the largest total delay $D$ defined in \eqref{OSA-PSO_a} does not exceed $h$, i.e., $D \leq h$, while satisfying the condition that, for every server $s \in V_{\rm{S}}$, the required status holding time does not exceed the minimum of $H_{\rm APL}$ and $H_s$?}
+    Given a set of servers $V_{\rm{S}}$, a set of users $V_{\rm{U}}$, delay values between servers and between servers and users, the maximum number of users that can be assigned to each server $M_s\blue{, s \in V_{\rm{S}}}$, a set of failure scenarios $F$, where at most one server in $V_{\rm{S}}$ may fail at any time, 
+    and the maximum status holding \blue{times, $H_{\rm APL}$ and $H_s$ of an application and server $s \in V_{\rm{S}}$, respectively, 
+    is} there a feasible allocation of users to servers such that \blue{the largest total delay $D$ defined in \eqref{OSA-PSO_a} does not exceed $h$, i.e., $D \leq h$, while satisfying the condition that, for every server $s \in V_{\rm{S}}$, the required status holding time does not exceed the minimum of $H_{\rm APL}$ and $H_s$?}
 \end{definition}
 \begin{thm}
 D-OSA-PSO is NP-complete.
 \end{thm}
-}
 \begin{proof}
-  \blue{
   First, we show that D-OSA-PSO is in NP.
   % D-OSA-PSOのinstanceが与えられた時，その解がyes instanceかどうかを多項式時間で確認できる．
   Given a certificate of any instance of D-OSA-PSO, we can verify whether the solution is yes in polynomial time.  % 大木先生に25/01/30に送っていただいた本を参考にした．その本は間違ってないから，それに倣っていたら良いはず．
-  For each failure scenario $f \in F$, verifying that every user is allocated to a server and determining the maximum user-to-server delay \cyan{$D_{\mathrm{U}f}$} can be accomplished in $O(|V_{\rm{U}}|)$ time.
+  For each failure scenario $f \in F$, verifying that every user is allocated to a server and determining the maximum user-to-server delay \blue{$D_{\mathrm{U}f}$} can be accomplished in $O(|V_{\rm{U}}|)$ time.
   We can verify if the constraint of the maximum status holding time is satisfied in $O(|V_{\rm{U}}||V_{\rm{S}}|)$ time by checking the delay between each user and its assigned server, and the delay between each pair of servers.
-  \cyan{We can also verify the total delay under failure scenario $f \in F$, $2D_{\mathrm{U}f}$, is less than or equal to $h$ in $O(1)$ time.}
+  \blue{We can also verify the total delay under failure scenario $f \in F$, $2D_{\mathrm{U}f}$, is less than or equal to $h$ in $O(1)$ time.}
   Since the number of failure scenarios is $|V_{\rm{S}}|+1$, the whole time complexity is $O(|V_{\rm{U}}||V_{\rm{S}}|^2)$.
-  }
 
-  \blue{
   Second, we prove that the 3-satisfiability problem (3-SAT), a well-known NP-complete problem~\cite{3_12_3SAT}, can be reduced to D-OSA-PSO in polynomial time. 
   3-SAT is defined as follows:
   {\it Given $n$ boolean variables and $k$ clauses, where each clause consists of three literals, does there exist an assignment of truth values to the variables such that every clause evaluates to true?}
-  }
 
-  \blue{
-  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-OSA-PSO. \magenta{This construction ensures that $I$ is a yes-instance if and only if $J$ is a yes-instance.} %M1前期火1L13参考にした
+  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-OSA-PSO. This construction ensures that $I$ is a yes-instance if and only if $J$ is a yes-instance. %M1前期火1L13参考にした
   A schematic diagram illustrating this construction is provided in Fig.~\ref{fig:3SAT_RTC}.
-  }
   \begin{figure}[!t]
     \begin{center}
       \includegraphics[width=0.8\columnwidth]{./fig/fig_3SAT_RTC.pdf}
     \end{center}
       % \vspace{-0.3cm}
-    \caption{\blue{Graph $G$ corresponding to 3-SAT with three clauses.}}
+    \caption{Graph $G$ corresponding to 3-SAT with three clauses.}
     \label{fig:3SAT_RTC}
   \end{figure}
 
-  \blue{
   \begin{itemize}
     \item Create a graph $G$ consisting of $k$ user nodes and $3k+1$ server nodes. The server nodes are consists of a server node $V_{\rm Z}$ and $3k$ server nodes grouped into $k$ sets, each containing three nodes $V_{ij}$ for $i = 1, 2, \cdots, k$ and $j = 1, 2, 3$, 
     \item All server nodes are linked with edges.
@@ -408,63 +399,53 @@ D-OSA-PSO is NP-complete.
       \item Otherwise, the length of edges are set to two.
     \end{itemize}
     \item Each user node is linked with edges that have a length of zero.
-    \item \magenta{We set $M_s = H_s = 1$ for all servers $s \in V_{\rm S}$, and $H_{\rm APL} = 1$. Thus, for every $s \in V_{\rm S}$, we have $\min(H_{\rm APL}, H_s) = 1$.}
-    \item \magenta{We set the total delay threshold to $h = 2$.}
+    \item We set $M_s = H_s = 1$ for all servers $s \in V_{\rm S}$, and $H_{\rm APL} = 1$. Thus, for every $s \in V_{\rm S}$, we have $\min(H_{\rm APL}, H_s) = 1$.
+    \item We set the total delay threshold to $h = 2$.
   \end{itemize}
-  }
-\magenta{The above construction can be performed in time $O(|E_{\rm S}| + |E_{\rm U}|)$.}
+The above construction can be performed in time $O(|E_{\rm S}| + |E_{\rm U}|)$.
 
 %  \blue{
 %  We set the capacity of each server node $s\in V_{\rm S}$,  $M_s$, to one to complete the D-OSA-PSO instance.  We set $\min(H_{\rm APL},H_s)$ to one for all servers $s \in V_{\rm{S}}$.}
 
-  \blue{
   The D-OSA-PSO instance is feasible if and only if there exists a satisfiable 3-SAT assignment, which is shown below.
-  }
 
-  \blue{
   Suppose that there exists a true 3-SAT assignment. 
   We consider three cases for at most one server failure in the following.
   First, if server node $V_{\rm Z}$ fails,
   we can choose $k$ nodes from $V_{ij}$, one corresponding to true assignment from each clause, which are all interconnected with edges of length one.
   We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
-  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, \cyan{$2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
+  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, \blue{$2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
   Second, if a server node $V_{ij}$ fails,
-  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which \cyan{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
+  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which \blue{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
   Third, if no server fails, 
-  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also \cyan{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
-  Hence, \cyan{the largest total delay $D = \max_{f \in F}{2D_{\mathrm{U}f}}$ is two, which satisfies $D \leq h$, and the required status holding time among all server failure scenarios is one.
+  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also \blue{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
+  Hence, \blue{the largest total delay $D = \max_{f \in F}{2D_{\mathrm{U}f}}$ is two, which satisfies $D \leq h$, and the required status holding time among all server failure scenarios is one.
   Therefore} the D-OSA-PSO instance is feasible.
-  }
 
-  \blue{
   Conversely, assume that an instance of D-OSA-PSO is yes.
-  \cyan{Considering that} server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
+  \blue{Considering that} server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
   From the definition of $G$, these server nodes correspond to variables with compatible true assignments.
   Thus, assigning the value true to the variables associated with these $k$ nodes ensures that every clause is satisfied.
   Therefore, the corresponding instance of 3-SAT is yes.
-  }
 
-  \blue{
   Since we have shown a polynomial-time reduction from 3-SAT to D-OSA-PSO, and D-OSA-PSO is in NP, it follows that D-OSA-PSO is NP-complete.
-  }
 \end{proof}
 
 % \vspace{-0.3cm}
 \section{Numerical results}
 \label{sec:numerical_results}
-\blue{
 We evaluate the proposed model in terms of OSA and PSO.
 % 
-For our experiments, we consider two \cyan{networks}: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
+For our experiments, we consider two \blue{networks}: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
 The potential servers in each network are illustrated in Fig.~\ref{fig:ServerLocation}.
-In each \cyan{network}, servers are interconnected using the shortest available path.
+In each \blue{network}, servers are interconnected using the shortest available path.
 For instance, in the COST~239 network, node~6 reaches node~11 through node~9.
 In each network, user locations are randomly generated within the latitude and longitude ranges indicated in Fig.~\ref{fig:ServerLocation}.
 The delay is assumed to increase linearly with transmission distance, with a reference value of 0.5~ms per 100~km, following the approach in~\cite{KawabataICC2023}.
 Distances for direct links between servers and links between servers and users are computed using spherical trigonometry based on geographic coordinates, as described in~\cite{12Imanaka2024}.
 The distance $d_\mathrm{AB}$ between two locations A and B, given their longitudes $x_\mathrm{A}$, $x_\mathrm{B}$ and latitudes $y_\mathrm{A}$, $y_\mathrm{B}$, is computed as follows:
 $d_\mathrm{AB} = R \arccos\left( \sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}) \right)$,
-where $R$ denotes the equatorial radius\cyan{~\cite{Zohora2018}}.
+where $R$ denotes the equatorial radius\blue{~\cite{Zohora2018}}.
 All experiments are performed on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
 We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
 \begin{figure}[t]
@@ -476,25 +457,21 @@ We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Potential server locations in JPN Kanto and COST~239.}}
+  \caption{Potential server locations in JPN Kanto and COST~239.}
   \label{fig:ServerLocation}
 \end{figure}
-}
 
-\blue{
-We conduct experiments \cyan{solving the ILP problem~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} in the proposed model}, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
+We conduct experiments \blue{solving the ILP problem~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} in the proposed model}, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
 % server capacityの制限はなしで行う
-We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users; \magenta{we observe the basic characteristics of the proposed model, eliminating the impact of server capacity in this paper.}
+We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users; we observe the basic characteristics of the proposed model, eliminating the impact of server capacity in this paper.
 For each configuration, we perform $n$ independent trials.
 We set $n$ to 20 for all configurations
 and use the average of the results.
-}
 
-\subsection{\cyan{Dependency on maximum status holding time}}
+\subsection{\blue{Dependency on maximum status holding time}}
 \label{subsec:Dependency_on_maximum_status_holding_time}
 
-\blue{
-We assess the delay and the computation time of OSA-PSO and the conventional \cyan{model}, which is CSA-based server allocation \cyan{model} with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
+We assess the delay and the computation time of OSA-PSO and the conventional \blue{model}, which is CSA-based server allocation \blue{model} with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
 CSA-PSO is formulated as follows:
 \begin{subequations} \label{CSA-PSO}
   \begin{align}
@@ -505,22 +482,17 @@ CSA-PSO is formulated as follows:
   &2D_{\mathrm{U}f} + D_{\mathrm{S}f} \leq D, \quad \forall f \in F. \label{CSA-PSO_d}
   \end{align}
 \end{subequations}
-}
 
-\subsubsection{\cyan{Impact of $H_{\rm APL}$}}
+\subsubsection{\blue{Impact of $H_{\rm APL}$}}
 
-\blue{
 For the evaluation focusing on the application maximum status holding time, we set $H_s$ to $H_{\rm APL}$.
 $H_{\rm APL}$ is set from 0.8~ms to 1.3~ms for JPN Kanto and from 7.0~ms to 12.0~ms for COST~239.
-}
 
 % ここからdelayの評価
-\blue{
-Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show how the delay varies when $H_{\rm APL}$ changes for both the proposed and conventional \cyan{models} in the JPN Kanto and COST~239 networks, respectively.
+Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show how the delay varies when $H_{\rm APL}$ changes for both the proposed and conventional \blue{models} in the JPN Kanto and COST~239 networks, respectively.
 The delay of OSA decreases as $H_{\rm APL}$ increases for both networks.
 When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for COST~239, the delay of OSA is lower than that of CSA.
 % h_aplが大きい時にCSAの何%以下と言う記述はしないでおく．（%があまり低くないし，あまりダラダラ書いてられない）
-}
 \begin{figure}[t]
   \begin{center}
       \begin{tabular}{cc}
@@ -530,7 +502,7 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}}
+  \caption{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}
   \label{fig:delay_OSA_CSA_hapl_JPN}
 \end{figure}
 \begin{figure}[t]
@@ -542,21 +514,18 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}}
+  \caption{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}
   \label{fig:delay_OSA_CSA_hapl_COST}
 \end{figure}
-\blue{
 When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO_g}.
 In such cases, to satisfy~\eqref{OSA-PSO_g}, some users must be assigned to more distant servers, which can help reduce delays between their assigned server and other servers.
 This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for OSA.
 Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
 This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
 As a result, when the farthest users in both the 30-user and 70-user cases are located at comparable distances from the servers, the maximum delay remains nearly unchanged.
-From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO \cyan{model} is effective in reducing delay when $H_{\rm APL}$ is large.
-}
+From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO \blue{model} is effective in reducing delay when $H_{\rm APL}$ is large.
 
 % ここからcomputation timeの評価
-\blue{
 Tables~\ref{tab:ComputationTime_OSA_CSA_hapl_JPN} and~\ref{tab:ComputationTime_OSA_CSA_hapl_COST} show computation time for OSA and CSA at JPN Kanto and COST~239, respectively.
 When $V_{\rm U} = 30, 40, 50$ at COST~239, the computation time of OSA is shorter than that of CSA.
 When $V_{\rm U} = 60, 70$ at COST~239, the computation time of OSA at $H_{\rm APL} = 8.0$~ms is longer than that of CSA but shorter than that of CSA at other $H_{\rm APL}$ values.
@@ -565,9 +534,8 @@ In both networks, as the difference from a certain value of $H_{\rm APL}$ increa
 For scenarios with up to 70 users, the computation time remains within a few minutes, depending on the network topology and the value of $H_{\rm APL}$. 
 In practical situations, a short wait of several minutes before service initiation is permissible.
 Since user locations are typically known beforehand, this computation can be performed prior to launching the application, making the required processing time acceptable.
-}
 \begin{table}[t]
-  \caption{\blue{Comparison of computation time for each \cyan{model} at JPN Kanto.}}
+  \caption{Comparison of computation time for each \blue{model} at JPN Kanto.}
   \label{tab:ComputationTime_OSA_CSA_hapl_JPN}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
@@ -587,7 +555,7 @@ Since user locations are typically known beforehand, this computation can be per
   \end{center}
 \end{table}
 \begin{table}[t]
-  \caption{\blue{Conparison of computation time for each \cyan{model} at COST~239.}}
+  \caption{Conparison of computation time for each \blue{model} at COST~239.}
   \label{tab:ComputationTime_OSA_CSA_hapl_COST}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
@@ -607,14 +575,12 @@ Since user locations are typically known beforehand, this computation can be per
   \end{center}
 \end{table}
 
-\subsubsection{\cyan{Impact with $H_s$}}
-\blue{
+\subsubsection{\blue{Impact with $H_s$}}
 For the evaluation focusing on the server maximum status holding time, we set $H_{\rm APL}$ to the maximum value of $H_s$.
 In this evaluation, we investigate whether increasing the number of servers with higher $H_s$ values (i.e., those with greater memory resources) can result in a reduction in delay.
 We set values of $H_s$ for JPN Kanto and COST~239, as shown in Table~\ref{tab:condition_hs_JPN_COST}.
-}
 \begin{table}[t]
-  \caption{\blue{Values of $H_s$ defined in JPN Kanto and COST~239.}}
+  \caption{Values of $H_s$ defined in JPN Kanto and COST~239.}
   \label{tab:condition_hs_JPN_COST}
   \begin{center}
     \begin{tabular}{c|c}
@@ -631,11 +597,9 @@ We set values of $H_s$ for JPN Kanto and COST~239, as shown in Table~\ref{tab:co
   \end{center}
 \end{table}
 
-\blue{
-Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} show how the delay varies when $H_s$ changes for both the proposed and conventional \cyan{models} in the JPN Kanto and COST~239 networks, respectively.
+Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} show how the delay varies when $H_s$ changes for both the proposed and conventional \blue{models} in the JPN Kanto and COST~239 networks, respectively.
 Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} demonstrate that increasing the number of servers with greater memory resources leads to lower delays. 
-These findings indicate that the proposed \cyan{model} leverages server memory resources efficiently to minimize delay.
-}
+These findings indicate that the proposed \blue{model} leverages server memory resources efficiently to minimize delay.
 \begin{figure}[t]
   \begin{center}
       \begin{tabular}{cc}
@@ -645,7 +609,7 @@ These findings indicate that the proposed \cyan{model} leverages server memory r
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}}
+  \caption{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_JPN}
 \end{figure}
 \begin{figure}[t]
@@ -657,28 +621,23 @@ These findings indicate that the proposed \cyan{model} leverages server memory r
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}}
+  \caption{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_COST}
 \end{figure}
 
 % \vspace{-0.3cm}
-\subsection{\cyan{Comparison of proposed PSO model with SO and RO}}
-\blue{
-To demonstrate the effectiveness of PSO, we compare our proposed model against two \cyan{baselines}.
+\subsection{\blue{Comparison of proposed PSO model with SO and RO}}
+To demonstrate the effectiveness of PSO, we compare our proposed model against two \blue{baselines}.
 We evaluate the performance as the number of users varies, using both the JPN Kanto region and COST~239 networks.
 We set $H_{\rm APL} = H_s = 1.1$~ms in JPN Kanto and $H_{\rm APL} = H_s = 10$~ms in COST~239.
-}
 
-\subsubsection{\blue{Baselines}}
-\blue{
-We consider two \cyan{baselines}: SO and RO.
+\subsubsection{Baselines}
+We consider two \blue{baselines}: SO and RO.
 Both methods first compute the assignment where no server failures to minimize the total delay.
 When a server failure occurs, they then determine the reassignment for the affected scenario.
-}
 % Specifically, SO reallocates only those users whose server has failed to available servers to minimize the total delay in that scenario;
 % RO reassigns all users to non-failed servers to minimize the total delay under this failure scenario.
 
-\blue{
 For SO and RO, we first solve the ILP problem formulated as follows:
 \begin{subequations} \label{OSA-SO-f0}
   \begin{align}
@@ -688,9 +647,7 @@ For SO and RO, we first solve the ILP problem formulated as follows:
   \end{align}
 \end{subequations}
 This gives us the assignment under the scenario where no server fails, expressed as $x^0_{us}$ for $(u,s) \in E_{\rm{U}}$.
-}
 
-\blue{
 For the next step for SO, we solve the optimization problem for each failure scenario $f \in F \setminus \{0\}$ formulated as follows:
 \begin{subequations} \label{OSA-SO}
   \begin{align}
@@ -742,18 +699,14 @@ While the SO formulation closely resembles that of PSO, there are notable distin
 In PSO, the assignments for all failure scenarios including the scenario with no server failure are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n}, treating $x_{us0}$ in~\eqref{OSA-PSO_f} as a variable to be determined.
 In contrast, SO first computes the assignment for the no-failure scenario by solving the ILP formulation~\eqref{OSA-SO-f0_a}--\eqref{OSA-SO-f0_b}, and subsequently, for each failure scenario, determines the reassignment by solving the ILP formulation~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}, using the previously obtained $x^0_{us}$ in~\eqref{OSA-SO_i} as a given parameter.
 For RO, the optimization problem for each failure scenario $f \in F \setminus \{0\}$ is formulated in the same way as SO, except that constraint~\eqref{OSA-SO_i} is omitted from~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}.
-}
 
-\subsubsection{\blue{Experiment setup and metrics}}
-\blue{
-Following the approach in~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we assess the performance of the proposed model and \cyan{baselines} using the metrics described below.
+\subsubsection{Experiment setup and metrics}
+Following the approach in~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we assess the performance of the proposed model and \blue{baselines} using the metrics described below.
 To evaluate the benefit of PSO over SO, we define the reduction ratio of the largest total delay achieved by PSO compared to SO as
 $\alpha = \frac{\max_{f \in F}D^f_{\rm SO} - D_{\rm PSO}}{\max_{f \in F}D^f_{\rm SO}}$.
 We further evaluate the extent to which PSO increases the total delay in the no-failure scenario compared to SO. This penalty is calculated as
 $\beta = \frac{D^0_{\rm PSO} - D^0_{\rm SO}}{D^0_{\rm SO}}$.
-}
 
-\blue{
 To evaluate the performance of PSO relative to RO, we define the increase ratio of the largest total delay under PSO compared to RO as
 $\gamma = \frac{D_{\rm PSO} - \max_{f \in F}D^f_{\rm RO}}{\max_{f \in F}D^f_{\rm RO}}$.
 An unnecessary disconnection is defined as the reassignment of a user to a different server when their original server remains operational.
@@ -761,16 +714,13 @@ For each failure scenario $f \in F$, let $\nu_f$ denote the proportion of users 
 % \muは平均として使いたいので，\nuに変更
 The average proportion of users who experience unnecessary disconnections, calculated across all failure scenarios, is given by
 $\nu = \frac{\sum_{f \in F \setminus \{0\}}\nu_f}{|F| - 1}$.
-}
 
-\subsubsection{\blue{Evaluation}}
-\blue{
+\subsubsection{Evaluation}
 Figs.~\ref{fig:OSA_alpha_beta_JPN} and~\ref{fig:OSA_alpha_beta_COST} illustrate how $\alpha$ and $\beta$ vary as the number of users increases in the JPN Kanto region and COST~239 networks, respectively.
 % average: alpha JPN:0.1956 COST:0.0070 total:0.1013, beta JPN:0.3829 COST:0.1048 total:0.2439
 It can be seen that $\alpha$ tends to grow as the number of users increases in both networks, suggesting that PSO achieves larger reductions in total delay compared to SO as the user count rises.
 On average, $\alpha$ is 0.10, with the highest observed value for a failure scenario at one trial being 0.41 in JPN Kanto.
 It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ in the JPN Kanto, with the overall average value of $\beta$ being 0.24.
-}
 
 \begin{figure}[tb]
   \begin{center}
@@ -781,7 +731,7 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Evalutaion of PSO with SO when the number of users varies in JPN Kanto region.}}
+  \caption{Evalutaion of PSO with SO when the number of users varies in JPN Kanto region.}
   \label{fig:OSA_alpha_beta_JPN}
 \end{figure}
 
@@ -794,20 +744,18 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       \end{tabular}
   \end{center}
       % \vspace{-0.3cm}
-  \caption{\blue{Evalutaion of PSO with SO when the number of users varies in COST~239.}}
+  \caption{Evalutaion of PSO with SO when the number of users varies in COST~239.}
   \label{fig:OSA_alpha_beta_COST}
 \end{figure}
 
-\blue{
 Table~\ref{tab:OSA-PSO_gamma_nu} presents the results for $\gamma$ and $\nu$ as the number of users varies in both the JPN Kanto region and COST~239 networks.
 % average value \gamma: JPN:4.267*10e-4, COST:0, total:2.134*10e-4
 It is found that the average value of $\gamma$ is $2.1 \times 10^{-4}$, indicating that the largest total delay under PSO exceeds that of RO by only 0.021\% overall.
 % average value \nu: JPN:0.448, COST:0.378, total:0.413
 On average, $\nu$ is 0.41, indicating that 41\% of users experience unnecessary disconnections per failure scenario when using RO, while PSO completely eliminates such disconnections.
 As the number of users grows in both networks, $\nu$ also rises, suggesting that PSO becomes increasingly effective at preventing instability with larger users.
-}
 \begin{table}[t]
-  \caption{\blue{Evaluation of PSO with RO when the number of users varies.}}
+  \caption{Evaluation of PSO with RO when the number of users varies.}
   \label{tab:OSA-PSO_gamma_nu}
   \begin{center}
     \begin{tabular}{c|cc|cc}
@@ -825,28 +773,22 @@ As the number of users grows in both networks, $\nu$ also rises, suggesting that
   \end{center}
 \end{table}
 
-\blue{
 It is found that solving the PSO formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} for $|V_{\rm U}|=30$ in COST~239 requires 6.33~[s].
 Under the same conditions, SO and RO need $2.96 \times 10^{-2}$~[s] to compute the initial assignment without failures.
 For each failure scenario, the reassignment step takes $3.92 \times 10^{-3}$~[s] for SO and $2.39 \times 10^{-2}$~[s] for RO, resulting in total computation times of 0.073~[s] for SO and 0.293~[s] for RO.
 These results indicate that PSO requires more computational time than SO and RO, as it solves a larger-scale optimization problem simultaneously.
 Additionally, RO is slower than SO because it reassigns all users in each failure scenario, whereas SO only reallocates users whose servers have failed.
-}
 
-\blue{
 % この段落は最終版では外して，extended versionで追加してもいいかも．
 % \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
-We also conducte the proposed model and two \cyan{baselines} by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
+We also conducte the proposed model and two \blue{baselines} by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
 In this case, SO does not yield a feasible solution for $H_{\rm APL} \leq 1.0$ in JPN Kanto and $H_{\rm APL} \leq 9$ in COST~239.
 % これは，maximum status holding timeの制約が厳しくなった際に，SOよりもPSOの方が柔軟に対応することができることを示している．
 This indicates that PSO can adapt more flexibly than SO when the maximum status holding time constraint becomes stricter.
-}
 
-\blue{
 Overall, the proposed PSO model achieves a lower largest total delay than SO by jointly optimizing across all failure scenarios, with an average improvement $\alpha$ of 0.10 and up to 0.41 in the worst case.
 The largest total delay under PSO is nearly equivalent to that of RO.
 Furthermore, PSO effectively eliminates instability due to unnecessary user reassignments, whereas RO results in an average of 41\% of users being unnecessarily reassigned per failure scenario.
-}
 
 % \vspace{-0.5cm}
 \section{Conclusion}
