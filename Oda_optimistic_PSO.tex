@@ -387,7 +387,7 @@ D-OSA-PSO is NP-complete.
   }
 
   \blue{
-  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-OSA-PSO such that the answer to $I$ is yes if and only if the answer to $J$ is yes. %M1前期火1L13参考にした
+  Given any instance $I$ of 3-SAT, we construct an instance $J$ of D-OSA-PSO. \magenta{This construction ensures that $I$ is a yes-instance if and only if $J$ is a yes-instance.} %M1前期火1L13参考にした
   A schematic diagram illustrating this construction is provided in Fig.~\ref{fig:3SAT_RTC}.
   }
   \begin{figure}[!t]
@@ -409,13 +409,14 @@ D-OSA-PSO is NP-complete.
       \item Otherwise, the length of edges are set to two.
     \end{itemize}
     \item Each user node is linked with edges that have a length of zero.
+    \item \magenta{We set $M_s = H_s = 1$ for all servers $s \in V_{\rm S}$, and $H_{\rm APL} = 1$. Thus, for every $s \in V_{\rm S}$, we have $\min(H_{\rm APL}, H_s) = 1$.}
+    \item \magenta{We set the total delay threshold to $h = 2$.}
   \end{itemize}
   }
+\magenta{The above construction can be performed in time $O(|E_{\rm S}| + |E_{\rm U}|)$.}
 
-  \blue{
-  We set the capacity of each server node $M_s$ to one to complete the D-OSA-PSO instance.
-  We set $\min(H_{\rm APL},H_s)$ to one for all servers $s \in V_{\rm{S}}$.
-  }
+%  \blue{
+%  We set the capacity of each server node $s\in V_{\rm S}$,  $M_s$, to one to complete the D-OSA-PSO instance.  We set $\min(H_{\rm APL},H_s)$ to one for all servers $s \in V_{\rm{S}}$.}
 
   \blue{
   The D-OSA-PSO instance is feasible if and only if there exists a satisfiable 3-SAT assignment, which is shown below.
@@ -429,9 +430,9 @@ D-OSA-PSO is NP-complete.
   We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
   Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, the constraint of the maximum status holding time is satisfied.
   Second, if a server node $V_{ij}$ fails,
-  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which satisfys the maximum status holding time constraint.
+  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which satisfies the maximum status holding time constraint.
   Third, if no server fails, 
-  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also satisfys the maximum status holding time constraint.
+  We can assign each user node to the same server node as in the case where server node $V_{\ rmZ}$ fails, which also satisfies the maximum status holding time constraint.
   Hence, the maximum status holding time is satisfied in all failure scenarios, and the D-OSA-PSO instance is feasible.
   }
 
@@ -455,7 +456,7 @@ D-OSA-PSO is NP-complete.
 We evaluate the proposed model in terms of OSA and PSO.
 % 
 For our experiments, we consider two network models: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
-The potentail servers in each network are illustrated in Fig.~\ref{fig:ServerLocation}.
+The potential servers in each network are illustrated in Fig.~\ref{fig:ServerLocation}.
 In each network model, servers are interconnected using the shortest available path.
 For instance, in the COST~239 network, node~6 reaches node~11 through node~9.
 In each network, user locations are randomly generated within the latitude and longitude ranges indicated in Fig.~\ref{fig:ServerLocation}.
@@ -483,7 +484,7 @@ We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
 \blue{
 We conduct experiments using the proposed ILP formulation, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
 % server capacityの制限はなしで行う
-We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users.
+We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users; \magenta{we observe the basic characteristics of the proposed model, eliminating the impact of server capacity in this paper.}
 For each configuration, we perform $n$ independent trials.
 We set $n$ to 20 for all configurations
 and use the average of the results.
@@ -566,7 +567,7 @@ In many practical situations, a short wait of several minutes before service ini
 Since user locations are typically known beforehand, this computation can be performed prior to launching the application, making the required processing time acceptable.
 }
 \begin{table}[t]
-  \caption{\blue{Conparison of computation time for each scheme at JPN Kanto.}}
+  \caption{\blue{Comparison of computation time for each scheme at JPN Kanto.}}
   \label{tab:ComputationTime_OSA_CSA_hapl_JPN}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
@@ -609,8 +610,8 @@ Since user locations are typically known beforehand, this computation can be per
 \subsubsection{\blue{Evaluation with $H_s$}}
 \blue{
 For the evaluation focusing on the server maximum status holding time, we set $H_{\rm APL}$ to the maximum value of $H_s$.
-In this evaluation, we examine whether increasing the number of servers with higher $H_s$ values (i.e., greater memory resources) can lead to a reduction in delay.
-We set values of $H_s$ for JPN Kanto and COST~239 as shown in Table~\ref{tab:condition_hs_JPN_COST}.
+In this evaluation, we investigate whether increasing the number of servers with higher $H_s$ values (i.e., those with greater memory resources) can result in a reduction in delay.
+We set values of $H_s$ for JPN Kanto and COST~239, as shown in Table~\ref{tab:condition_hs_JPN_COST}.
 }
 \begin{table}[t]
   \caption{\blue{Values of $H_s$ defined in JPN Kanto and COST~239.}}
