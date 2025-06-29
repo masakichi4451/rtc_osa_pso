@@ -283,25 +283,25 @@ Table~\ref{tbl:notation_OSA-PSO} summarises the given parameters and decision pa
 The optimization problem of OSA-PSO to minimize $D$ is formulated as an ILP problem as follows:
 \begin{subequations} \label{OSA-PSO}
   \begin{align}
-  \text{Objective}&\text{ min}\quad D \label{OSA-PSO a} \\
+  \text{Objective}&\text{ min}\quad D \label{OSA-PSO_a} \\
   \rm{s.t.} \quad
-  &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO b} \\
-  &\blue{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
-  % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
-  &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
-  &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO d} \\
-  &2D_{\mathrm{U}f} \le D, \quad \forall f \in F \label{OSA-PSO e} \\
+  &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO_b} \\
+  &\blue{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO_b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
+  % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO_c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
+  &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO_c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
+  &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO_d} \\
+  &2D_{\mathrm{U}f} \le D, \quad \forall f \in F \label{OSA-PSO_e} \\
   &x_{us0} \le x_{usf}, \notag \\
-  &\qquad \forall f \in F \setminus \{0\}, \; u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{OSA-PSO f} \\
+  &\qquad \forall f \in F \setminus \{0\}, \; u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\} \label{OSA-PSO_f} \\
   &x_{usf}d(u,s) + x_{stf}d(s,t) \le \min(H_{\rm APL},H_s), \notag \\
-  &\qquad \forall s \in V_{\rm{S}}, (u,s) \in E_{\rm{U}}, (s,t) \in E_{\rm{S}}, f \in F \label{OSA-PSO g} \\
-  &y_{sf} \geq x_{usf}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO h} \\
-  &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO i} \\
-  &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO j} \\
-  &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO k} \\
-  &\sum_{u \in V_{\rm{U}}} x_{usf} \geq y_{sf} , \quad \forall s \in V_{\rm{S}}, \; f \in F \label{OSA-PSO l} \\
-  &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \; f \in F \label{OSA-PSO m} \\
-  &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \; f \in F. \label{OSA-PSO n}
+  &\qquad \forall s \in V_{\rm{S}}, (u,s) \in E_{\rm{U}}, (s,t) \in E_{\rm{S}}, f \in F \label{OSA-PSO_g} \\
+  &y_{sf} \geq x_{usf}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO_h} \\
+  &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO_i} \\
+  &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO_j} \\
+  &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO_k} \\
+  &\sum_{u \in V_{\rm{U}}} x_{usf} \geq y_{sf} , \quad \forall s \in V_{\rm{S}}, \; f \in F \label{OSA-PSO_l} \\
+  &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \; f \in F \label{OSA-PSO_m} \\
+  &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \; f \in F. \label{OSA-PSO_n}
   \end{align}
 \end{subequations}
 % The optimization problem of CMND-PSO to minimize $D$ is formulated as an ILP problem as follows:
@@ -334,21 +334,21 @@ The optimization problem of OSA-PSO to minimize $D$ is formulated as an ILP prob
 % \end{subequations}
 
 % \vspace{-0.3cm}
-The formulation given in~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} is described below.
-Equation~\eqref{OSA-PSO a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
-Equation~\eqref{OSA-PSO b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
-\blue{Equation~\eqref{OSA-PSO b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
-Equation~\eqref{OSA-PSO c} indicates that if a server fails in a failure scenario, it is used.
+The formulation given in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is described below.
+Equation~\eqref{OSA-PSO_a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
+Equation~\eqref{OSA-PSO_b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
+\blue{Equation~\eqref{OSA-PSO_b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
+Equation~\eqref{OSA-PSO_c} indicates that if a server fails in a failure scenario, it is used.
 % indicates that a failed server cannot host any user under each failure scenario.
 %
-Equation~\eqref{OSA-PSO d} computes $D_{\mathrm{U}f}$ as the maximum delay from any user to its assigned server in each failure scenario~$f$.
-Equation~\eqref{OSA-PSO e} calculates $D$ as the largest total delay of $2D_{\mathrm{U}f}$ across all possible failure scenarios.
+Equation~\eqref{OSA-PSO_d} computes $D_{\mathrm{U}f}$ as the maximum delay from any user to its assigned server in each failure scenario~$f$.
+Equation~\eqref{OSA-PSO_e} calculates $D$ as the largest total delay of $2D_{\mathrm{U}f}$ across all possible failure scenarios.
 % あるサーバがあるfailure scenarioにおいて故障していない場合，どのサーバも故障していないscenarioにおいてそのサーバに接続していたユーザはそのサーバに接続し続ける．
-Equation~\eqref{OSA-PSO f} ensures that, for any server that remains operational in a given failure scenario, users originally assigned to that server when no failures occur are not reassigned elsewhere.
-Equation~\eqref{OSA-PSO g} ensures that, for every server $s \in V_{\rm{S}}$, the maximum status holding time does not surpass the minimum of $H_{\rm APL}$ and $H_s$.
-Equation~\eqref{OSA-PSO h} guarantees that a server is considered active if it serves at least one user.
-Equations~\eqref{OSA-PSO i}--\eqref{OSA-PSO k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
-Equation~\eqref{OSA-PSO l} ensures that at least one user is assigned to each server in each failure scenario.
+Equation~\eqref{OSA-PSO_f} ensures that, for any server that remains operational in a given failure scenario, users originally assigned to that server when no failures occur are not reassigned elsewhere.
+Equation~\eqref{OSA-PSO_g} ensures that, for every server $s \in V_{\rm{S}}$, the maximum status holding time does not surpass the minimum of $H_{\rm APL}$ and $H_s$.
+Equation~\eqref{OSA-PSO_h} guarantees that a server is considered active if it serves at least one user.
+Equations~\eqref{OSA-PSO_i}--\eqref{OSA-PSO_k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
+Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each server in each failure scenario.
 
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
@@ -498,11 +498,11 @@ We assess the delay and the computation time of OSA-PSO and the conventional sch
 CSA-PSO is formulated as follows:
 \begin{subequations} \label{CSA-PSO}
   \begin{align}
-  \text{Objective}&\text{ min}\quad D \label{CSA-PSO a} \\
+  \text{Objective}&\text{ min}\quad D \label{CSA-PSO_a} \\
   \rm{s.t.} \quad
-  & \eqref{OSA-PSO b}-\eqref{OSA-PSO e}, \eqref{OSA-PSO g}, \eqref{OSA-PSO i}-\eqref{OSA-PSO n} \label{CSA-PSO b} \\
-  &x_{stf}d(s,t) \le D_{\mathrm{S}f}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{CSA-PSO c} \\
-  &2D_{\mathrm{U}f} + D_{\mathrm{S}f} \leq D, \quad \forall f \in F. \label{CSA-PSO d}
+  & \eqref{OSA-PSO_b}-\eqref{OSA-PSO_e}, \eqref{OSA-PSO_g}, \eqref{OSA-PSO_i}-\eqref{OSA-PSO_n} \label{CSA-PSO_b} \\
+  &x_{stf}d(s,t) \le D_{\mathrm{S}f}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{CSA-PSO_c} \\
+  &2D_{\mathrm{U}f} + D_{\mathrm{S}f} \leq D, \quad \forall f \in F. \label{CSA-PSO_d}
   \end{align}
 \end{subequations}
 }
@@ -546,8 +546,8 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
   \label{fig:delay_OSA_CSA_hapl_COST}
 \end{figure}
 \blue{
-When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO g}.
-In such cases, to satisfy~\eqref{OSA-PSO g}, some users must be assigned to more distant servers, which can help reduce delays between their assigned server and other servers.
+When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO_g}.
+In such cases, to satisfy~\eqref{OSA-PSO_g}, some users must be assigned to more distant servers, which can help reduce delays between their assigned server and other servers.
 This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for OSA.
 Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
 This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
@@ -682,9 +682,9 @@ When a server failure occurs, they then determine the reassignment for the affec
 For SO and RO, we first solve the ILP problem formulated as follows:
 \begin{subequations} \label{OSA-SO-f0}
   \begin{align}
-  \text{Objective}&\text{ min}\quad 2D_{\mathrm{U}f} \label{OSA-SO-f0 a} \\
+  \text{Objective}&\text{ min}\quad 2D_{\mathrm{U}f} \label{OSA-SO-f0_a} \\
   \rm{s.t.} \quad
-  & \eqref{OSA-PSO b}, \eqref{OSA-PSO d}, \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{0\}. \label{OSA-SO-f0 b}
+  & \eqref{OSA-PSO_b}, \eqref{OSA-PSO_d}, \eqref{OSA-PSO_g}-\eqref{OSA-PSO_n}, \; F = \{0\}. \label{OSA-SO-f0_b}
   \end{align}
 \end{subequations}
 This gives us the assignment under the scenario where no server fails, expressed as $x^0_{us}$ for $(u,s) \in E_{\rm{U}}$.
@@ -694,13 +694,13 @@ This gives us the assignment under the scenario where no server fails, expressed
 For the next step for SO, we solve the optimization problem for each failure scenario $f \in F \setminus \{0\}$ formulated as follows:
 \begin{subequations} \label{OSA-SO}
   \begin{align}
-  \text{Objective}&\text{ min}\quad D^f \label{OSA-SO a} \\
+  \text{Objective}&\text{ min}\quad D^f \label{OSA-SO_a} \\
   \rm{s.t.} \quad
   % ------ 省略部分開始 ------
-  & \eqref{OSA-PSO b}-\eqref{OSA-PSO d}, \eqref{OSA-PSO g}-\eqref{OSA-PSO n}, \; F = \{f\} \label{OSA-SO b-d,g-n} \\
+  & \eqref{OSA-PSO_b}-\eqref{OSA-PSO_d}, \eqref{OSA-PSO_g}-\eqref{OSA-PSO_n}, \; F = \{f\} \label{OSA-SO_b-d,g-n} \\
   % ------ 省略部分終了 ------
-  &2D_{\mathrm{U}f} \le D^f \label{OSA-SO h} \\
-  &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\}. \label{OSA-SO i}
+  &2D_{\mathrm{U}f} \le D^f \label{OSA-SO_h} \\
+  &x^0_{us} \le x_{usf}, \quad \forall u \in V_{\rm{U}}, \; s \in V_{\rm{S}} \setminus \{f\}. \label{OSA-SO_i}
   \end{align}
 \end{subequations}
 % \begin{subequations} \label{SO}
@@ -737,11 +737,11 @@ For the next step for SO, we solve the optimization problem for each failure sce
 %   % ------ 省略部分2終了 ------
 %   \end{align}
 % \end{subequations}
-Equation~\eqref{OSA-SO b-d,g-n} enforces the same constraints as~\eqref{OSA-PSO b}--\eqref{OSA-PSO d} and~\eqref{OSA-PSO g}--\eqref{OSA-PSO n}, applied for the single failure scenario $F = \{f\}$.
+Equation~\eqref{OSA-SO_b-d,g-n} enforces the same constraints as~\eqref{OSA-PSO_b}--\eqref{OSA-PSO_d} and~\eqref{OSA-PSO_g}--\eqref{OSA-PSO_n}, applied for the single failure scenario $F = \{f\}$.
 While the SO formulation closely resembles that of PSO, there are notable distinctions between the two approaches.
-In PSO, the assignments for all failure scenarios including the scenario with no server failure are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO a}--\eqref{OSA-PSO n}, treating $x_{us0}$ in~\eqref{OSA-PSO f} as a variable to be determined.
-In contrast, SO first computes the assignment for the no-failure scenario by solving the ILP formulation~\eqref{OSA-SO-f0 a}--\eqref{OSA-SO-f0 b}, and subsequently, for each failure scenario, determines the reassignment by solving the ILP formulation~\eqref{OSA-SO a}--\eqref{OSA-SO i}, using the previously obtained $x^0_{us}$ in~\eqref{OSA-SO i} as a given parameter.
-For RO, the optimization problem for each failure scenario $f \in F \setminus \{0\}$ is formulated in the same way as SO, except that constraint~\eqref{OSA-SO i} is omitted from~\eqref{OSA-SO a}--\eqref{OSA-SO i}.
+In PSO, the assignments for all failure scenarios including the scenario with no server failure are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n}, treating $x_{us0}$ in~\eqref{OSA-PSO_f} as a variable to be determined.
+In contrast, SO first computes the assignment for the no-failure scenario by solving the ILP formulation~\eqref{OSA-SO-f0_a}--\eqref{OSA-SO-f0_b}, and subsequently, for each failure scenario, determines the reassignment by solving the ILP formulation~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}, using the previously obtained $x^0_{us}$ in~\eqref{OSA-SO_i} as a given parameter.
+For RO, the optimization problem for each failure scenario $f \in F \setminus \{0\}$ is formulated in the same way as SO, except that constraint~\eqref{OSA-SO_i} is omitted from~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}.
 }
 
 \subsubsection{\blue{Experiment setup and metrics}}
@@ -826,7 +826,7 @@ As the number of users grows in both networks, $\nu$ also rises, suggesting that
 \end{table}
 
 \blue{
-It is found that solving the PSO formulation~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} for $|V_{\rm U}|=30$ in COST~239 requires 6.33~[s].
+It is found that solving the PSO formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} for $|V_{\rm U}|=30$ in COST~239 requires 6.33~[s].
 Under the same conditions, SO and RO need $2.96 \times 10^{-2}$~[s] to compute the initial assignment without failures.
 For each failure scenario, the reassignment step takes $3.92 \times 10^{-3}$~[s] for SO and $2.39 \times 10^{-2}$~[s] for RO, resulting in total computation times of 0.073~[s] for SO and 0.293~[s] for RO.
 These results indicate that PSO requires more computational time than SO and RO, as it solves a larger-scale optimization problem simultaneously.
