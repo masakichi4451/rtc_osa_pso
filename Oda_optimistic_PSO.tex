@@ -219,12 +219,11 @@ However, the model in~\cite{5_9_Masuda2020} does not consider the possibility of
 Therefore, the model cannot be applied either.
 }
 
-\section{\blue{Proposed model: OSA-PSO}}
+\section{Proposed model: OSA-PSO}
 \label{sec:proposed_mode_cmnd_pso}
 
 \subsection{Problem definitions}
 
-\blue{
 We present the formal definition of CMND-PSO. Let the network be represented by an undirected graph $G = (V, E)$.
 Let $V$ denote the set of all nodes and $E$ the set of all edges in the network.
 Let $V_{\rm{U}} \subseteq V$ be the set of users, and let $V_{\rm{S}} \subseteq V$ be the set of potential server locations, where $|V_{\rm{S}}| \geq 2$.
@@ -235,12 +234,10 @@ Let $E_{\rm{U}} \subseteq E$ be the set of edges between users and servers, and 
 An edge connecting a user $u \in V_{\rm{U}}$ to a server $s \in V_{\rm{S}}$ is represented as $(u,s) \in E_{\rm{U}}$.
 An edge connecting two distinct servers $s, t \in V_{\rm{S}}$ is represented as $(s, t) \in E_{\rm{S}}$.
 Note that $E_{\rm U} \cup E_{\rm S} =E$ and $E_{\rm{U}} \cap E_{\rm{S}} = \emptyset$.
-\cyan{Let $M_s$ be the maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.}
+\blue{Let $M_s$ be the maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.}
 This paper assumes that no more than one server can fail simultaneously.
 Let $F = \{0, 1, \ldots, |V_{\rm{S}}|\}$ be the set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.
-}
 
-\blue{
 Let $d(u,s)$ represent the delay from user $u \in V_{\rm{U}}$ to server $s \in V_{\rm{S}}$, and let $d(s,t)$ denote the delay between servers $s, t \in V_{\rm{S}}$ with $s \neq t$.
 We suppose $d(u,s) \geq 0$ and $d(u,s) = d(s,u)$ for all $u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$.
 In addition, we require that $d(s,t) \geq 0$ for all $s, t \in V_{\rm{S}}$, that the delays are symmetric, i.e., $d(s,t) = d(t,s)$, and that the delay from a server to itself is zero, i.e., $d(s,s) = 0$.
@@ -256,7 +253,7 @@ We define OSA-PSO as an optimization problem to minimize $D$.
 % 
 \begin{table}[tb]
     \centering
-    \caption{Given parameters and decision parameters of \blue{OSA-PSO}.}
+    \caption{Given parameters and decision parameters of OSA-PSO.}
     \label{tbl:notation_OSA-PSO}
     \begin{tabular}{p{1.3cm}|cp{5.4cm}}
         \hline
@@ -267,31 +264,29 @@ We define OSA-PSO as an optimization problem to minimize $D$.
         & $E$ & Set of edges. \\
         & $E_{\rm{U}}$ & Set of edges between users and servers. \\
         & $E_{\rm{S}}$ & Set of edges between servers. \\
-        & \cyan{$M_s$} & \cyan{Maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.} \\
+        & \blue{$M_s$} & \blue{Maximum number of users that can be assigned to server $s \in V_{\rm{S}}$.} \\
         & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
         & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
-        & $F$ & \blue{Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$.} \\
-        & \blue{$H_{\rm APL}$} & \blue{Maximum status holding time of an aplication.} \\
-        & \blue{$H_s$} & \blue{Maximum status holding time of server $s$.} \\ \hline
-        Decision parameters & $D$ & \blue{The largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios.} \\
-        & $D_{\mathrm{U}f}$ & \blue{Largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$.} \\
+        & $F$ & Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$. \\
+        & $H_{\rm APL}$ & Maximum status holding time of an aplication. \\
+        & $H_s$ & Maximum status holding time of server $s$. \\ \hline
+        Decision parameters & $D$ & The largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios. \\
+        & $D_{\mathrm{U}f}$ & Largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$. \\
         & $x_{ijf}$ & Binary. $x_{ijf} = 1$ if edge $(i,j) \in E_{\rm U} \cup E_{\rm S} (=E)$ is used under failure scenario~$f \in F$; $x_{ijf} = 0$ otherwise. \\
         & $y_{sf}$ & Binary. $y_{sf} = 1$ if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$; $y_{sf} = 0$ otherwise. \\ \hline
     \end{tabular}
 \end{table}
 Table~\ref{tbl:notation_OSA-PSO} summarises the given parameters and decision parameters used in the problem.
-}
 
 % \vspace{-0.5cm}
 \subsection{Formulation of optimization problem}
-The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an ILP problem as follows:
-\blue{
+The optimization problem of OSA-PSO to minimize $D$ is formulated as an ILP problem as follows:
 \begin{subequations} \label{OSA-PSO}
   \begin{align}
   \text{Objective}&\text{ min}\quad D \label{OSA-PSO a} \\
   \rm{s.t.} \quad
   &\sum_{s \in V_{\rm{S}} \setminus \{f\}} x_{usf} = 1, \quad \forall u \in V_{\rm{U}}, \; f \in F \label{OSA-PSO b} \\
-  &\cyan{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
+  &\blue{\sum_{u \in V_{\rm{U}}} x_{usf} = M_s, \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO b'} \\  %近似アルゴリズムを考えないので，定式化ではサーバ容量制限も加えた．
   % &\sum_{u \in V_{\rm{U}}} x_{usf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これだとOSAではうまくいかない．x_{usf}は0だが，y_{sf}が1となるということが起こってしまう．おそらく，x_{stf}がどこの制約も受けないから．
   &y_{sf} = 0, \quad \mathrm{if} \; s = f, \; \forall f \in F \label{OSA-PSO c} \\  % これと(h)で，元の(c)式を満たす．さらに，これと(j)でx_{ftf}が0になり，上記のようなことは起こらなくなる（f=0に関しては）．他のfの時も含めて，おかしいのは新たに追加した(l)式で十分だと思うが，元の(c)式よりこちらの方が簡単なのでこのままにしておく．
   &x_{usf}d(u,s) \le D_{\mathrm{U}f}, \quad \forall (u,s) \in E_{\rm{U}}, \; f \in F \label{OSA-PSO d} \\
@@ -304,12 +299,11 @@ The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an I
   &y_{sf} + y_{tf} - 1 \le x_{stf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO i} \\
   &x_{stf} \le y_{sf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO j} \\
   &x_{stf} \le y_{tf}, \quad \forall (s,t) \in E_{\rm{S}}, \; f \in F \label{OSA-PSO k} \\
-  &\cyan{\sum_{u \in V_{\rm{U}}} x_{usf} \geq y_{sf} , \quad \forall s \in V_{\rm{S}}, \; f \in F} \label{OSA-PSO l} \\
+  &\sum_{u \in V_{\rm{U}}} x_{usf} \geq y_{sf} , \quad \forall s \in V_{\rm{S}}, \; f \in F \label{OSA-PSO l} \\
   &x_{ijf} \in \{0,1\}, \quad \forall (i,j) \in E, \; f \in F \label{OSA-PSO m} \\
   &y_{sf} \in \{0,1\}, \quad \forall s \in V_{\rm{S}}, \; f \in F. \label{OSA-PSO n}
   \end{align}
 \end{subequations}
-}
 % The optimization problem of CMND-PSO to minimize $D$ is formulated as an ILP problem as follows:
 % \begin{subequations} \label{single-failure-without-capacity}
 %   \begin{align}
@@ -340,11 +334,10 @@ The optimization problem of \blue{OSA-PSO} to minimize $D$ is formulated as an I
 % \end{subequations}
 
 % \vspace{-0.3cm}
-\blue{
 The formulation given in~\eqref{OSA-PSO a}--\eqref{OSA-PSO n} is described below.
 Equation~\eqref{OSA-PSO a} defines the objective function, aiming to minimize the largest total delay across all possible failure scenarios.
 Equation~\eqref{OSA-PSO b} ensures that, for every failure scenario, each user is connected to exactly one non-failed server.
-\cyan{Equation~\eqref{OSA-PSO b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
+\blue{Equation~\eqref{OSA-PSO b'} ensures that, for every server in each failure scenario, the number of users assigned to that server does not exceed its capacity.}
 Equation~\eqref{OSA-PSO c} indicates that if a server fails in a failure scenario, it is used.
 % indicates that a failed server cannot host any user under each failure scenario.
 %
@@ -356,7 +349,6 @@ Equation~\eqref{OSA-PSO g} ensures that, for every server $s \in V_{\rm{S}}$, th
 Equation~\eqref{OSA-PSO h} guarantees that a server is considered active if it serves at least one user.
 Equations~\eqref{OSA-PSO i}--\eqref{OSA-PSO k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
 Equation~\eqref{OSA-PSO l} ensures that at least one user is assigned to each server in each failure scenario.
-}
 
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
@@ -840,7 +832,7 @@ These results indicate that PSO requires more computational time than SO and RO,
 Additionally, RO is slower than SO because it reassigns all users in each failure scenario, whereas SO only reallocates users whose servers have failed.
 }
 
-\cyan{
+\blue{
 % この段落は最終版では外して，extended versionで追加してもいいかも．
 % \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
 We also conducte the proposed model and two baseline methods by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
