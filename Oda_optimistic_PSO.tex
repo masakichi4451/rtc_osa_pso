@@ -360,11 +360,9 @@ Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each se
 \blue{
 We define the decision version of the OSA-based server allocation with PSO (D-OSA-PSO) as follows.
 \begin{definition}
-    Given a set of servers $V_{\rm{S}}$, a set of users $V_{\rm{U}}$, delay values between servers and between servers and users, the maximum number of users that can be assigned to each server $M_s$, a set of failure scenarios $F$, where at most one server in $V_{\rm{S}}$ may fail at any time, 
-    and the maximum status holding time $\min(H_{\rm APL},H_s)$.
-    % maximum status holding timeの制約を満たすuserの適切なサーバへの割り当ては存在しますか？
-    % 川端さんの論文の"appropriate"は，maximum status holding timeの制約を満たすuserの適切なサーバへの割り当ては存在しますか？という意味で使われていると思われる．ここではそれを明記した．
-    Is there a feasible allocation of users to servers such that the maximum status holding time is satisfied?
+    Given a set of servers $V_{\rm{S}}$, a set of users $V_{\rm{U}}$, delay values between servers and between servers and users, the maximum number of users that can be assigned to each server $M_s\cyan{, s \in V_{\rm{S}}}$, a set of failure scenarios $F$, where at most one server in $V_{\rm{S}}$ may fail at any time, 
+    and the maximum status holding \cyan{times, $H_{\rm APL}$ and $H_s$ of an application and server $s \in V_{\rm{S}}$, respectively, 
+    is} there a feasible allocation of users to servers such that \cyan{the largest total delay $D$ defined in \eqref{OSA-PSO_a} does not exceed $h$, i.e., $D \leq h$, while satisfying the condition that, for every server $s \in V_{\rm{S}}$, the required status holding time does not exceed the minimum of $H_{\rm APL}$ and $H_s$?}
 \end{definition}
 \begin{thm}
 D-OSA-PSO is NP-complete.
@@ -375,8 +373,9 @@ D-OSA-PSO is NP-complete.
   First, we show that D-OSA-PSO is in NP.
   % D-OSA-PSOのinstanceが与えられた時，その解がyes instanceかどうかを多項式時間で確認できる．
   Given a certificate of any instance of D-OSA-PSO, we can verify whether the solution is yes in polynomial time.  % 大木先生に25/01/30に送っていただいた本を参考にした．その本は間違ってないから，それに倣っていたら良いはず．
-  For each failure scenario $f \in F$, verifying that every user is allocated to a server and determining the maximum user-to-server delay can be accomplished in $O(|V_{\rm{U}}|)$ time.
+  For each failure scenario $f \in F$, verifying that every user is allocated to a server and determining the maximum user-to-server delay \cyan{$D_{\mathrm{U}f}$} can be accomplished in $O(|V_{\rm{U}}|)$ time.
   We can verify if the constraint of the maximum status holding time is satisfied in $O(|V_{\rm{U}}||V_{\rm{S}}|)$ time by checking the delay between each user and its assigned server, and the delay between each pair of servers.
+  \cyan{We can also verify the total delay under failure scenario $f \in F$, $2D_{\mathrm{U}f}$, is less than or equal to $h$ in $O(1)$ time.}
   Since the number of failure scenarios is $|V_{\rm{S}}|+1$, the whole time complexity is $O(|V_{\rm{U}}||V_{\rm{S}}|^2)$.
   }
 
@@ -428,17 +427,18 @@ D-OSA-PSO is NP-complete.
   First, if server node $V_{\rm Z}$ fails,
   we can choose $k$ nodes from $V_{ij}$, one corresponding to true assignment from each clause, which are all interconnected with edges of length one.
   We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
-  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, the constraint of the maximum status holding time is satisfied.
+  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, \cyan{$2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
   Second, if a server node $V_{ij}$ fails,
-  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which satisfies the maximum status holding time constraint.
+  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which \cyan{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
   Third, if no server fails, 
-  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also satisfies the maximum status holding time constraint.
-  Hence, the maximum status holding time is satisfied in all failure scenarios, and the D-OSA-PSO instance is feasible.
+  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also \cyan{ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.}
+  Hence, \cyan{the largest total delay $D = \max_{f \in F}{2D_{\mathrm{U}f}}$ is two, which satisfies $D \leq h$, and the required status holding time among all server failure scenarios is one.
+  Therefore} the D-OSA-PSO instance is feasible.
   }
 
   \blue{
   Conversely, assume that an instance of D-OSA-PSO is yes.
-  When server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
+  \cyan{Considering that} server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
   From the definition of $G$, these server nodes correspond to variables with compatible true assignments.
   Thus, assigning the value true to the variables associated with these $k$ nodes ensures that every clause is satisfied.
   Therefore, the corresponding instance of 3-SAT is yes.
