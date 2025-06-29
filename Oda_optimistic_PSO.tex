@@ -464,7 +464,7 @@ The delay is assumed to increase linearly with transmission distance, with a ref
 Distances for direct links between servers and links between servers and users are computed using spherical trigonometry based on geographic coordinates, as described in~\cite{12Imanaka2024}.
 The distance $d_\mathrm{AB}$ between two locations A and B, given their longitudes $x_\mathrm{A}$, $x_\mathrm{B}$ and latitudes $y_\mathrm{A}$, $y_\mathrm{B}$, is computed as follows:
 $d_\mathrm{AB} = R \arccos\left( \sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}) \right)$,
-where $R$ denotes the equatorial radius.
+where $R$ denotes the equatorial radius\cyan{~\cite{Zohora2018}}.
 All experiments are performed on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
 We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
 \begin{figure}[t]
@@ -482,7 +482,7 @@ We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
 }
 
 \blue{
-We conduct experiments using the proposed ILP formulation, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
+We conduct experiments \cyan{solving the ILP problem~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} in the proposed model}, where $H_{\rm APL}$ and $H_s$ are fixed to given values, and the number of users is varied from 30 to 70 in steps of 10.
 % server capacityの制限はなしで行う
 We set $M_s$ to $V_{\rm U}$, which means that each server can accommodate all users; \magenta{we observe the basic characteristics of the proposed model, eliminating the impact of server capacity in this paper.}
 For each configuration, we perform $n$ independent trials.
@@ -494,7 +494,7 @@ and use the average of the results.
 \label{subsec:Dependency_on_maximum_status_holding_time}
 
 \blue{
-We assess the delay and the computation time of OSA-PSO and the conventional scheme, which is CSA-based server allocation scheme with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
+We assess the delay and the computation time of OSA-PSO and the conventional \cyan{model}, which is CSA-based server allocation \cyan{model} with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
 CSA-PSO is formulated as follows:
 \begin{subequations} \label{CSA-PSO}
   \begin{align}
@@ -516,7 +516,7 @@ $H_{\rm APL}$ is set from 0.8~ms to 1.3~ms for JPN Kanto and from 7.0~ms to 12.0
 
 % ここからdelayの評価
 \blue{
-Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show how the delay varies when $H_{\rm APL}$ changes for both the proposed and conventional schemes in the JPN Kanto and COST~239 networks, respectively.
+Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show how the delay varies when $H_{\rm APL}$ changes for both the proposed and conventional \cyan{models} in the JPN Kanto and COST~239 networks, respectively.
 The delay of OSA decreases as $H_{\rm APL}$ increases for both networks.
 When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for COST~239, the delay of OSA is lower than that of CSA.
 % h_aplが大きい時にCSAの何%以下と言う記述はしないでおく．（%があまり低くないし，あまりダラダラ書いてられない）
@@ -552,7 +552,7 @@ This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for 
 Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
 This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
 As a result, when the farthest users in both the 30-user and 70-user cases are located at comparable distances from the servers, the maximum delay remains nearly unchanged.
-From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO scheme is effective in reducing delay when $H_{\rm APL}$ is large.
+From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO \cyan{model} is effective in reducing delay when $H_{\rm APL}$ is large.
 }
 
 % ここからcomputation timeの評価
@@ -567,7 +567,7 @@ In practical situations, a short wait of several minutes before service initiati
 Since user locations are typically known beforehand, this computation can be performed prior to launching the application, making the required processing time acceptable.
 }
 \begin{table}[t]
-  \caption{\blue{Comparison of computation time for each scheme at JPN Kanto.}}
+  \caption{\blue{Comparison of computation time for each \cyan{model} at JPN Kanto.}}
   \label{tab:ComputationTime_OSA_CSA_hapl_JPN}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
@@ -587,7 +587,7 @@ Since user locations are typically known beforehand, this computation can be per
   \end{center}
 \end{table}
 \begin{table}[t]
-  \caption{\blue{Conparison of computation time for each scheme at COST~239.}}
+  \caption{\blue{Conparison of computation time for each \cyan{model} at COST~239.}}
   \label{tab:ComputationTime_OSA_CSA_hapl_COST}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
@@ -632,9 +632,9 @@ We set values of $H_s$ for JPN Kanto and COST~239, as shown in Table~\ref{tab:co
 \end{table}
 
 \blue{
-Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} show how the delay varies when $H_s$ changes for both the proposed and conventional schemes in the JPN Kanto and COST~239 networks, respectively.
+Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} show how the delay varies when $H_s$ changes for both the proposed and conventional \cyan{models} in the JPN Kanto and COST~239 networks, respectively.
 Figs.~\ref{fig:delay_OSA_CSA_hs_JPN} and~\ref{fig:delay_OSA_CSA_hs_COST} demonstrate that increasing the number of servers with greater memory resources leads to lower delays. 
-These findings indicate that the proposed scheme leverages server memory resources efficiently to minimize delay.
+These findings indicate that the proposed \cyan{model} leverages server memory resources efficiently to minimize delay.
 }
 \begin{figure}[t]
   \begin{center}
