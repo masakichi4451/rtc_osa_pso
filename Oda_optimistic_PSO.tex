@@ -455,9 +455,9 @@ D-OSA-PSO is NP-complete.
 \blue{
 We evaluate the proposed model in terms of OSA and PSO.
 % 
-For our experiments, we consider two network models: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
+For our experiments, we consider two \cyan{networks}: the JPN Kanto region~\cite{JPN} and COST~239~\cite{COST}. 
 The potential servers in each network are illustrated in Fig.~\ref{fig:ServerLocation}.
-In each network model, servers are interconnected using the shortest available path.
+In each \cyan{network}, servers are interconnected using the shortest available path.
 For instance, in the COST~239 network, node~6 reaches node~11 through node~9.
 In each network, user locations are randomly generated within the latitude and longitude ranges indicated in Fig.~\ref{fig:ServerLocation}.
 The delay is assumed to increase linearly with transmission distance, with a reference value of 0.5~ms per 100~km, following the approach in~\cite{KawabataICC2023}.
@@ -490,8 +490,8 @@ We set $n$ to 20 for all configurations
 and use the average of the results.
 }
 
-\subsection{\blue{Evaluation with maximum status holding time}}
-\label{subsec:Evaluation with maximum status holding time}
+\subsection{\cyan{Dependency on maximum status holding time}}
+\label{subsec:Dependency_on_maximum_status_holding_time}
 
 \blue{
 We assess the delay and the computation time of OSA-PSO and the conventional scheme, which is CSA-based server allocation scheme with PSO (CSA-PSO) depends on the maximum status holding time, $H_{\rm APL}$ and $H_s$.
@@ -507,7 +507,7 @@ CSA-PSO is formulated as follows:
 \end{subequations}
 }
 
-\subsubsection{\blue{Evaluation with $H_{\rm APL}$}}
+\subsubsection{\cyan{Impact of $H_{\rm APL}$}}
 
 \blue{
 For the evaluation focusing on the application maximum status holding time, we set $H_s$ to $H_{\rm APL}$.
@@ -563,7 +563,7 @@ When $V_{\rm U} = 60, 70$ at COST~239, the computation time of OSA at $H_{\rm AP
 In both networks, as the difference from a certain value of $H_{\rm APL}$ increases, the computation time tends to decrease.
 % 近似アルゴリズムを今回は考えないので，以下のブロックを追加
 For scenarios with up to 70 users, the computation time remains within a few minutes, depending on the network topology and the value of $H_{\rm APL}$. 
-In many practical situations, a short wait of several minutes before service initiation is permissible.
+In practical situations, a short wait of several minutes before service initiation is permissible.
 Since user locations are typically known beforehand, this computation can be performed prior to launching the application, making the required processing time acceptable.
 }
 \begin{table}[t]
@@ -607,7 +607,7 @@ Since user locations are typically known beforehand, this computation can be per
   \end{center}
 \end{table}
 
-\subsubsection{\blue{Evaluation with $H_s$}}
+\subsubsection{\cyan{Impact with $H_s$}}
 \blue{
 For the evaluation focusing on the server maximum status holding time, we set $H_{\rm APL}$ to the maximum value of $H_s$.
 In this evaluation, we investigate whether increasing the number of servers with higher $H_s$ values (i.e., those with greater memory resources) can result in a reduction in delay.
@@ -662,16 +662,16 @@ These findings indicate that the proposed scheme leverages server memory resourc
 \end{figure}
 
 % \vspace{-0.3cm}
-\subsection{\blue{Evaluation of proposed PSO model}}
+\subsection{\cyan{Comparison of proposed PSO model with SO and RO}}
 \blue{
-To demonstrate the effectiveness of PSO, we compare our proposed model against two baseline approaches.
+To demonstrate the effectiveness of PSO, we compare our proposed model against two \cyan{baselines}.
 We evaluate the performance as the number of users varies, using both the JPN Kanto region and COST~239 networks.
 We set $H_{\rm APL} = H_s = 1.1$~ms in JPN Kanto and $H_{\rm APL} = H_s = 10$~ms in COST~239.
 }
 
 \subsubsection{\blue{Baselines}}
 \blue{
-We consider two baseline methods: SO and RO.
+We consider two \cyan{baselines}: SO and RO.
 Both methods first compute the assignment where no server failures to minimize the total delay.
 When a server failure occurs, they then determine the reassignment for the affected scenario.
 }
@@ -746,7 +746,7 @@ For RO, the optimization problem for each failure scenario $f \in F \setminus \{
 
 \subsubsection{\blue{Experiment setup and metrics}}
 \blue{
-Following the approach in~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we assess the performance of the proposed model and baseline methods using the metrics described below.
+Following the approach in~\cite{5_9_13_Kamrul2010, 5_9_Masuda2020}, we assess the performance of the proposed model and \cyan{baselines} using the metrics described below.
 To evaluate the benefit of PSO over SO, we define the reduction ratio of the largest total delay achieved by PSO compared to SO as
 $\alpha = \frac{\max_{f \in F}D^f_{\rm SO} - D_{\rm PSO}}{\max_{f \in F}D^f_{\rm SO}}$.
 We further evaluate the extent to which PSO increases the total delay in the no-failure scenario compared to SO. This penalty is calculated as
@@ -836,7 +836,7 @@ Additionally, RO is slower than SO because it reassigns all users in each failur
 \blue{
 % この段落は最終版では外して，extended versionで追加してもいいかも．
 % \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
-We also conducte the proposed model and two baseline methods by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
+We also conducte the proposed model and two \cyan{baselines} by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Evaluation with maximum status holding time}.
 In this case, SO does not yield a feasible solution for $H_{\rm APL} \leq 1.0$ in JPN Kanto and $H_{\rm APL} \leq 9$ in COST~239.
 % これは，maximum status holding timeの制約が厳しくなった際に，SOよりもPSOの方が柔軟に対応することができることを示している．
 This indicates that PSO can adapt more flexibly than SO when the maximum status holding time constraint becomes stricter.
