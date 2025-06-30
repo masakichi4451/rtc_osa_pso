@@ -96,127 +96,168 @@ $^\dag$Kyoto University, Kyoto, Japan\ \ $^\ddag$Toyohashi University of Technol
 
 % \vspace{-2cm}
 \begin{abstract}
-Real-time applications require low latency and event order guarantees.  
-Distributed server processing is effective for this purpose, and data consistency between servers is crucial.  
-Although existing models in previous work handle data consistency, they do not address server failures.  
-This paper proposes a server allocation model for a consistency-aware multi-server network for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
-The proposed model considers data consistency between servers and handles single-server failures with PSO.
-PSO determines the assignment to minimize the worst-case delay over all possible failure scenarios while avoiding service disruption for users connected to non-failed servers.  
+\blue{
+Real-time applications require low latency and strict event ordering.  
+Distributed server processing is effective for this purpose, and there are two synchronization algorithms: conservative synchronization algorithm (CSA) and optimistic synchronization algorithm (OSA).
+% 特に，OSAはdistributed systemで課題となるメモリの消費量を抑えることができる．
+OSA allows servers to process events without prior order enforcement, rolling back their status to the time of the event occurrence if an out-of-order event is detected, which can reduce memory consumption compared to CSA.
+While prior studies have considered OSA, they have not incorporated the impact of server failures. 
+This paper proposes a OSA-based server allocation model for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
+The proposed model minimized the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints with PSO under single-server failures.
+PSO proactively assigns users to servers so as to minimize the maximum delay across all failure scenarios, while ensuring that users connected to servers that remain operational are not unnecessarily reassigned.  
 We formulate the proposed model as an integer linear programming (ILP) problem.  
-The decision version of the server allocation problem is proven to be NP-complete, and it becomes difficult to solve in a practical time when the problem size is large.  
-We develop two polynomial-time approximation algorithms with theoretical performance analysis. 
-Numerical results show that the proposed model outperforms start-time optimization in terms of the largest total delay and run-time optimization in terms of avoiding instability.  
-The results also show that the faster of our two developed algorithms achieves a speedup ranging from $2.26 \times 10^3$ to $4.37 \times 10^6$ times compared to the ILP approach, while the maximum delay is, on average, only 1.029 times the optimal value.
-The results indicate that the speedup effect becomes more significant as the number of users and servers increases.
+We prove that the decision version of the server allocation problem is NP-complete. 
+Numerical results show that the proposed OSA-based model reduces the delay compared to the conventional CSA-based model by effectively utilizing server memory resources.
+Numerical results also demonstrate that the proposed model achieves a lower largest total delay than start-time optimization and provides greater stability by preventing unnecessary user reassignments compared to run-time optimization.
+}
 \end{abstract}
 % \vspace{-0.3cm}
 \begin{IEEEkeywords}
-  Server allocation, data consistency, preventive start-time optimization, server failure, approximation algorithm.
+\blue{Server allocation, optimistic synchronization algorithm, preventive start-time optimization, server failure.}
 \end{IEEEkeywords}
 
 % \vspace{-0.5cm}
 \section{Introduction}
 \label{sec:introduction}
 
-\red{
-With the development of fifth-generation (5G) mobile networks~\cite{DOCOMO_5G}, the need for low latency in real-time applications such as ticket reservation systems and online gaming has increased.
-These applications also require event order to be preserved.
-Traditionally, centralized processing (CP) is used, where a central server manages event ordering.
-This method requires the central server to wait for the maximum delay from the most distant user to process events in sequence, resulting in significant delays.
+\blue{
+The advancement of fifth-generation (5G) mobile networks~\cite{DOCOMO_5G} has heightened the demand for real-time applications, such as ticket reservation systems and online gaming, which require both low latency and strict event ordering.
+To ensure event order, traditional approaches rely on centralized processing (CP), where a central server coordinates the sequence of events.
+However, this approach requires waiting for the slowest user response, since the central server must account for the maximum round-trip delay among all users. 
+This leads to an increase in overall delay.
 }
 
-\red{
-Kawabata~{\it et~al.}~\cite{2Kawabata2017} introduced a distributed server processing (DSP) approach that leverages edge computing~\cite{edge_26,edge_27,edge_28,edge_29}. 
-In this approach, each user connects to one distributed server. 
-Subsequently, each server forwards user-generated events to other servers, allowing them to store and manage these events, which is an additional step compared to centralized processing (CP). 
-Finally, each server sends the processing results back to the users. 
-Let $D_\mathrm{U}^{\max}$ and $D_\mathrm{S}^{\max}$ represent the maximum delays between servers and users and between servers, respectively. 
-These three steps take at most $D_\mathrm{U}^{\max}$, $D_\mathrm{S}^{\max}$, and $D_\mathrm{U}^{\max}$ time, respectively. 
-Thus, DSP incurs a total maximum delay of $2D_\mathrm{U}^{\max} + D_\mathrm{S}^{\max}$. 
-The authors~\cite{2Kawabata2017} addressed a server allocation method to minimize this total delay. 
-Similarly, the delay for CP can be expressed as $2D_\mathrm{U}^{\max}$. 
-Since each user connects to a nearby server in DSP, $D_\mathrm{U}^{\max}$ is smaller than in CP, reducing the total delay. 
-However, DSP does not consider transmission errors when servers forward events. 
-As a result, events received by different servers may vary, leading to inconsistent processing results being returned to users.
+\blue{
+Some studies~\cite{OSA_Kawabata_5,OSA_Kawabata_6} have examined the advantages and limitations of parallel and distributed systems in processing events according to their actual occurrence order. 
+Ensuring correct event sequencing while maintaining parallelism remains a key challenge in such systems~\cite{OSA_Kawabata_7,OSA_Kawabata_8}. 
+To address this, various synchronization algorithms have been introduced, which are broadly classified into conservative synchronization algorithms (CSA) and optimistic synchronization algorithms (OSA)~\cite{OSA_Kawabata_9}. 
+CSA enforces event order by associating time information with each event, thereby preserving the correct sequence. 
+In contrast, OSA allows events to be processed without prior order enforcement; if an out-of-order event is detected, the system performs a rollback to guarantees the event order and corrects its results.
+These synchronization techniques are particularly relevant for delay-sensitive applications, including network-based shooter games~\cite{OSA_Kawabata_10} and transaction management systems~\cite{OSA_Kawabata_11}.
+While the rollback mechanism enables flexible event processing, it requires servers to retain extensive historical state information, potentially leading to higher memory usage than CSA-based methods.
 }
 
-\red{
-Servers can fail for various reasons, including hardware malfunctions, software errors, and excessive load~\cite{5_9_8_Shi2016}. 
-Due to the geographical distribution and the complexity of managing and maintaining edge servers, they are more prone to failures than centralized cloud servers.
-When a server fails, the users connected to it must be reassigned to another server to restore service, which can affect the maximum total delay.
-The work in~\cite{5_9_Masuda2020} developed a distributed server allocation model for DSP against single-server failures. % Masuda論文から追加
-The server allocation problem for CMND handling server failures has not been thoroughly explored.
-Since single-server failures are more common than multiple simultaneous failures, this paper focuses on the scenario of single-server failures.
+\blue{
+The work~\cite{2Kawabata2017} introduced a distributed server processing (DSP) model with CSA, taking advantage of edge computing~\cite{edge_26,edge_27,edge_28,edge_29}. 
+In this model, each user is assigned to a distributed server, and servers exchange user-generated events with one another, enabling all servers to store and manage these events, which is an additional step compared to centralized processing (CP). 
+After reconstructing the event sequence according to their actual occurrence, each server processes the events.
+The results are then sent back to the respective users. 
+Let $D_\mathrm{U}^{\max}$ denote the maximum delay between users and servers, and $D_\mathrm{S}^{\max}$ the maximum delay between servers. 
+The three communication steps—user-to-server communication, inter-server event sharing, and server-to-user response—require at most $D_\mathrm{U}^{\max}$, $D_\mathrm{S}^{\max}$, and $D_\mathrm{U}^{\max}$ time, respectively. 
+Therefore, the total maximum delay for DSP with CSA is $2D_\mathrm{U}^{\max} + D_\mathrm{S}^{\max}$. 
+The work in~\cite{2Kawabata2017} formulated a server assignment strategy to minimize this delay. 
+For comparison, the total delay in CP is $2D_\mathrm{U}^{\max}$. 
+Since DSP with CSA allows users to connect to closer servers, $D_\mathrm{U}^{\max}$ is typically reduced compared to CP, leading to a lower overall delay.
 }
 
-\red{
-One method to handle server allocation in the event of a single server failure is to first determine the optimal allocation without considering any failures and then decide on a reallocation after each failure occurs.
-More specifically, start-time optimization (SO) reassigns users connected to the failed server to other non-failed servers to minimize the total delay for that failure scenario. On the other hand, 
-run-time optimization (RO) reassigns all users to non-failed servers to minimize the total delay for that failure scenario.
-SO provides the optimal allocation when no failures occur.
-However, this start-time optimal allocation may not yield optimal solutions for other failure scenarios.
-Conversely, RO always finds the optimal allocation for each failure scenario, but it may reassign users to new servers even if their current server has not failed.
-This can lead to instability due to unnecessary disconnections.
+\blue{
+The work~\cite{OSA_Kawabata_2021} introduced an DSP model with OSA.
+When a server receives an event from its assigned user, it rolls back its status to the time when the event was occurred and processes the event and sends the result back to the user immediately.
+Due to the rollback mechanism, each server must retain the application's previous state until the latest possible arrival of any delayed event.
+The total maximum delay for DSP with OSA is $2D_\mathrm{U}^{\max}$;
+it is the round-trip delay between a user and its assigned server, where the maximum is taken over all user-server pairs. 
+In other words, this represents the largest round-trip communication time between any user and the server to which they are allocated.
 }
 
-\red{
-Another method to handle server allocation in the event of a single server failure is preventive start-time optimization (PSO). The original concept of PSO was introduced in the network optimization studies~\cite{5_9_13_Kamrul2010,OkiDRCN2014} to minimize network congestion against failures while suppressing service interruption.
-In PSO, users are preventively assigned to servers to minimize the largest total delay among all failure scenarios. 
-To avoid instability, as in SO, PSO does not allow users connected to non-failed servers to be reassigned to other non-failed servers when a server fails.
+\blue{
+Server failures can arise from a range of causes, such as hardware breakdowns, software faults, or overload conditions~\cite{5_9_8_Shi2016}. 
+Given the distributed nature and operational complexity of edge servers, their susceptibility to failure is generally higher than that of centralized cloud servers.
+In the event of a server failure, users originally assigned to the failed server must be reallocated to alternative servers, which may impact the maximum total delay experienced in the system.
+Previous work~\cite{5_9_Masuda2020} has addressed a DSP model with CSA under the assumption of single-server failures.
+However, the problem of OSA-based server allocation in the presence of server failures remains insufficiently investigated.
+Since single-server failures are statistically more prevalent than concurrent multiple-server failures, this study concentrates on the single-server failure scenario.
+}
+
+\blue{
+A common approach for handling server allocation under single-server failures is to first decide the optimal assignment assuming no failures, and then update the allocation as failures occur. 
+In this context, start-time optimization (SO) reallocates only users connected to failed server to minimize the total delay in each failure scenario. 
+In contrast, run-time optimization (RO) allows all users to be reassigned to any available server after a failure, seeking to minimize the total delay for each scenario. 
+While SO ensures the best allocation when no failures are present, it may not provide the lowest delay in the presence of failures. 
+RO, on the other hand, always achieves the minimum delay for each failure scenario, but it may unnecessarily reassign users whose servers remain operational, potentially causing instability due to avoidable service interruptions.
+}
+
+\blue{
+Preventive start-time optimization (PSO) offers an alternative approach for server allocation under single-server failure scenarios. 
+PSO was originally introduced in the context of network optimization~\cite{5_9_13_Kamrul2010,OkiDRCN2014} to proactively mitigate network congestion and reduce service disruptions in the presence of failures. 
+In PSO, user-to-server assignments are determined in advance to minimize the largest total delay across all possible failure scenarios. 
+To maintain service stability, PSO, like SO, restricts the reassignment of users whose servers remain operational, ensuring that only users affected by a server failure are reallocated. 
 % サービスの中断をなくし，全ての故障シナリオを考えた時の全体の遅延時間を最小化するためにはPSOが有効である．
-PSO effectively minimizes the largest total delay among all failure scenarios while avoiding service interruptions.
+PSO effectively minimizes the largest total delay accross all failure scenarios while avoiding unnecessary service interruptions.
 }
 
-\red{
-Two questions arise: 
-% 1. モデルを開発することができるのか
-% 2. そういう問題に対する効率的なアルゴリズムがあるのか
-1) Can we develop a model for the server allocation problem for CMND with PSO against single-server failures (CMND-PSO)?
-2) Is there any efficient algorithm for the problem?
+\blue{
+A questions arises: 
+% モデルを開発することができるのか
+Can we develop a model for the OSA-based server allocation problem with PSO against single-server failures (OSA-PSO)?
 }
 
-\red{
-This paper proposes a server allocation model for CMND with PSO against single-server failures.
-The proposed model preventively allocates users to servers and determines the secondary servers for each server to minimize the largest total delay among all failure scenarios.
+\blue{
+This paper proposes a OSA-based server allocation model with PSO against single-server failures.
+The proposed model preventively assigns users to servers to minimize the largest total delay among all failure scenarios while satisfying the maximum status holding time constraints.
 To suppress instability, the proposed model does not allow users connected to non-failed servers to be reallocated to other non-failed servers when a server fails.
 We formulate the proposed model as an ILP problem.
-We prove that the decision version of CMND-PSO is NP-complete.
-Since it is difficult to solve the problem in a practical time when the problem size is large, we introduce approximation algorithms with theoretical performance analysis.
-We denote $a$ as the maximum delay between a user and a server among all failure scenarios in the optimal solution and $b$ as the maximum delay between servers among all failure scenarios in the optimal solution.
-We also denote $c$ as the maximum delay between a server and its secondary servers among all failure scenarios in the optimal solution.
-We theoretically prove that the proposed approximation algorithms can obtain a solution within a constant factor of $2a+b+c$ and analyze the computation time.
-Numerical results show that the proposed server allocation model for CMND with PSO against a single failure outperforms SO in terms of the largest total delay and RO in terms of avoiding instability.
-The results also show that our approximation algorithms can obtain a solution in a practical time while the approximate value is close to the optimal value.
+We prove that the decision version of OSA-PSO is NP-complete.
+% CSAに比べてdelayが削減される
+Numerical results show that the delay of the proposed OSA-based server allocation model can be reduced compared to that of the conventional CSA-based server allocation model.
+The results also show that the proposed OSA-based server allocation model with PSO against a single failure outperforms SO in terms of the largest total delay and RO in terms of avoiding instability.
 }
 
 % \vspace{-0.3cm}
 \section{Related work and limitations of existing models}
 \label{sec:related_work}
 
+\blue{
+The study in~\cite{OSA_Kawabata_2021} introduced a server allocation model based on OSA. 
+In this model, when a user has the option to connect to multiple servers, the resulting maximum end-to-end delay depends on which server is chosen, as the user-to-server delay varies accordingly. 
+The end-to-end delay is defined as the round-trip time between a user and their assigned server. 
+To minimize this delay, it is necessary to select server assignments while also considering constraints on the maximum status holding time, which are determined by application requirements and the memory capacity of each server. 
+Specifically, the time a server must wait for the latest possible event from its most distant user should not exceed the maximum status holding time. 
+Let $H_{\rm APL}$ represents the maximum status holding time of an application, and $H_s$ denote the maximum status holding time of server $s$. 
+Both $H_{\rm APL}$ and $H_s$ are predetermined based on application design and the available memory resources at each server.
+}
+
+\blue{
+Fig.~\ref{fig:OSA_allocation} illustrates two different server allocations with OSA in the same network. 
+In allocation~1 (Fig.~\ref{fig:OSA_allocation}(a)), the resulting delay is $8$ ($=4 \times 2$), while in allocation~2 (Fig.~\ref{fig:OSA_allocation}(b)), the delay increases to $14$ ($=7 \times 2$). 
+The corresponding maximum status holding times are $14$ ($=4+10$) for allocation~1 and $12$ ($=7+5$) for allocation~2. 
+Although allocation~1 allows user~1 to connect to the nearest server, it results in a larger maximum status holding time compared to allocation~2. 
+When $\min(H_{\rm APL}, H_s) \geq 14$, allocation~1 is preferable to allocation~2; $s$ used in $H_s$ is applied for all servers in the network.
+If $12 \leq \min(H_{\rm APL}, H_s) < 14$, only allocation~2 satisfies the status holding time constraint, making allocation~1 infeasible. 
+For $\min(H_{\rm APL}, H_s) < 12$, neither allocation is feasible. 
+These observations highlight the importance of selecting an appropriate allocation that minimizes end-to-end delay while ensuring compliance with the maximum status holding time constraint in OSA.
+However, the model in~\cite{OSA_Kawabata_2021} does not consider server failures.
+Since this paper focuses on the single-server failures in OSA with PSO, the model in~\cite{OSA_Kawabata_2021} cannot be applied.
+}
 \begin{figure}[tb]
   \begin{center}
       %\begin{tabular}{c}
-      \includegraphics[width=0.99\columnwidth]{./fig/tnsm/DSA_SOROPSO.pdf}
+      \includegraphics[width=0.99\columnwidth]{./fig/OSA_allocation.pdf}
   \end{center}
     % \vspace{-0.4cm}
-  \caption{\red{Example of distributed server allocation with SO, RO, and PSO.}}
-  \label{fig:DSA_SOROPSO}
+  \caption{\blue{Example of server allocations with OSA.}}
+  \label{fig:OSA_allocation}
 \end{figure}
 
-\red{
-The model in~\cite{5_9_Masuda2020} addressed single-server failures in DSP with PSO.
-Fig.~\ref{fig:DSA_SOROPSO} illustrates the distributed server allocation with SO, RO, and PSO.
-$f$ represents the failed server.
-When no server fails, $f = 0$, the total delay of SO is the smallest in feasible allocation.
-However, since SO can reassign users only if the users are connected to the failed server, the total delay of SO is larger than that of PSO when $f = 1$ and $2$.
-For example, in SO, since user~3 is assigned to server~2 when $f = 0$, user~3 has to be reassigned to server~2 when $f = 1$.
-Since the total delay is minimized under this condition when $f = 1$, the total delay is larger than that of PSO.
-Despite a value of $f$, the total delay of RO is always the smallest in feasible allocation.
-However, this causes instability when $f = 1$ and $2$.
-For example, in RO, user~3 is assigned to server~2 when $f = 0$, but user~3 is reassigned to server~3 when $f = 1$ while server~2 is not failed.
-PSO can suppress the total delay while avoiding instability by considering all failure scenarios when determining the allocation.
-However, the model in~\cite{5_9_Masuda2020} does not consider the possibility of data synchronization failure between servers.
-Therefore, the model cannot be applied either.
+\begin{figure}[tb]
+  \begin{center}
+      %\begin{tabular}{c}
+      \includegraphics[width=0.99\columnwidth]{./fig/CSA_SOROPSO.pdf}
+  \end{center}
+    % \vspace{-0.4cm}
+  \caption{\blue{Example of CSA-based server allocation with SO, RO, and PSO.}}
+  \label{fig:CSA_SOROPSO}
+\end{figure}
+\blue{
+The approach in~\cite{5_9_Masuda2020} considered single-server failures in the context of CSA with PSO.
+Figure~\ref{fig:CSA_SOROPSO} provides an overview of CSA-based server allocation with SO, RO, and PSO.
+Let $f$ denotes the failed server.
+When there is no failure ($f = 0$), SO achieves the minimum total delay among feasible allocations.
+However, SO restricts reassignment to only those users whose server has failed, which can result in a larger total delay compared to PSO when $f = 1$ or $2$.
+For instance, under SO, if user~3 is initially assigned to server~2 for $f = 0$, then upon failure of server~1 ($f = 1$), user~3 must be reassigned to server~2, even if this does not yield the lowest possible delay.
+In contrast, RO always yields the minimum total delay for any failure scenario, but it may lead to instability, as users may be reassigned to different servers even when their original server remains operational.
+For example, under RO, user~3 may be assigned to server~2 when $f = 0$, but reassigned to server~3 when $f = 1$, despite server~2 not having failed.
+PSO addresses this by optimizing the allocation across all failure scenarios, thereby reducing the total delay while avoiding instability.
+Nevertheless, the model in~\cite{5_9_Masuda2020} does not incorporate constraints on the maximum status holding time, and thus cannot be directly applied to scenarios where such constraints are required.
 }
 
 \section{Proposed model: OSA-PSO}
@@ -793,6 +834,16 @@ Furthermore, PSO effectively eliminates instability due to unnecessary user reas
 % \vspace{-0.5cm}
 \section{Conclusion}
 \label{sec:conclusion}
+
+\blue{
+We poposed the optimistic synchronization-based server allocation model with preventive start-time optimization (OSA-PSO) against single-server failures.
+We formulated the proposed model as an ILP problem, which minimizes the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints.
+We proved that the decision version of the problem is NP-complete.
+We conpared the proposed OSA-PSO model with the conventional conservative synchronization-based server allocation model with PSO (CSA-PSO) and showed that OSA-PSO achieves a lower delay than CSA-PSO when the maximum status holding time is large.
+We also compared the proposed OSA-PSO model with two baselines, start-time optimization (SO) and run-time optimization (RO).
+The results showed that the proposed model outperforms SO by jointly optimizing across all failure scenarios, achieving an average improvement of 0.10 in the largest total delay and up to 0.41 in the worst case.
+The results also showed that the proposed model achieves a largest total delay nearly equivalent to that of RO, while completely eliminating instability due to unnecessary user reassignments, which RO causes in 41\% of users per failure scenario.
+}
 
 \bibliography{IEEEabrv,Oda_optimistic_PSO}
 
