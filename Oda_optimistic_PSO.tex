@@ -363,8 +363,9 @@ Equation~\eqref{OSA-PSO_f} ensures that, for any server that remains operational
 Equation~\eqref{OSA-PSO_g} ensures that, for every server $s \in V_{\rm{S}}$, the maximum status holding time does not surpass the minimum of $H_{\rm APL}$ and $H_s$.
 Equation~\eqref{OSA-PSO_h} guarantees that a server is considered active if it serves at least one user.
 Equations~\eqref{OSA-PSO_i}--\eqref{OSA-PSO_k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
-Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each server in each failure scenario.
+Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each server in each failure scenario. \magenta{Equations~\eqref{OSA-PSO_m} and~\eqref{OSA-PSO_n} express the range of decision variables $x_{ijf}$ and $y_{sf}$, respectively.}
 
+\magenta{Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX} and Gurobi~\cite{Gurobi}.}
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
 
@@ -812,10 +813,10 @@ Furthermore, PSO effectively eliminates instability due to unnecessary user reas
 We proposed the optimistic synchronization-based server allocation model with preventive start-time optimization (OSA-PSO) against single-server failures.
 We formulated the proposed model as an ILP problem, which minimizes the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints.
 We proved that the decision version of the problem is NP-complete.
-We compared the proposed OSA-PSO model with the conventional conservative synchronization-based server allocation model with PSO (CSA-PSO) and showed that OSA-PSO achieves a lower delay than CSA-PSO when the maximum status holding time is large.
+We compared the proposed OSA-PSO model with the conventional conservative synchronization-based server allocation model with PSO (CSA-PSO). We showed that OSA-PSO achieves a lower delay than CSA-PSO when the maximum status holding time is large.
 We also compared the proposed OSA-PSO model with two baselines, start-time optimization (SO) and run-time optimization (RO).
-The results showed that the proposed model outperforms SO by jointly optimizing across all failure scenarios, \cyan{achieving 10\% reduction in the largest total delay on average, with a maximum improvement of 41\% in the worst case.}
-The results also showed that the proposed model achieves the largest total delay, nearly equivalent to that of RO, while completely eliminating instability due to unnecessary user reassignments, which RO causes in 41\% of users per failure scenario.
+The results showed that the proposed model outperforms SO by jointly optimizing across all failure scenarios, achieving 10\% reduction in the largest total delay on average, with a maximum improvement of 41\% in the worst case.
+The results also showed that the proposed model achieves the largest total delay, nearly equivalent to that of RO, while eliminating instability due to unnecessary user reassignments, which RO causes in 41\% of users per failure scenario.
 
 \bibliography{IEEEabrv,Oda_optimistic_PSO}
 
