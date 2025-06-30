@@ -98,17 +98,17 @@ $^\dag$Kyoto University, Kyoto, Japan\ \ $^\ddag$Toyohashi University of Technol
 \begin{abstract}
 \blue{
 Real-time applications require low latency and strict event ordering.  
-Distributed server processing is effective for this purpose, and there are two synchronization algorithms: conservative synchronization algorithm (CSA) and optimistic synchronization algorithm (OSA).
+Distributed server processing is effective for this purpose, and there are two synchronization algorithms: a conservative synchronization algorithm (CSA) and an optimistic synchronization algorithm (OSA).
 % 特に，OSAはdistributed systemで課題となるメモリの消費量を抑えることができる．
 OSA allows servers to process events without prior order enforcement, rolling back their status to the time of the event occurrence if an out-of-order event is detected, which can reduce memory consumption compared to CSA.
 While prior studies have considered OSA, they have not incorporated the impact of server failures. 
-This paper proposes a OSA-based server allocation model for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
-The proposed model minimized the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints with PSO under single-server failures.
+This paper proposes an OSA-based server allocation model for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
+The proposed model minimizes the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints with PSO under single-server failures.
 PSO proactively assigns users to servers so as to minimize the maximum delay across all failure scenarios, while ensuring that users connected to servers that remain operational are not unnecessarily reassigned.  
 We formulate the proposed model as an integer linear programming (ILP) problem.  
 We prove that the decision version of the server allocation problem is NP-complete. 
 Numerical results show that the proposed OSA-based model reduces the delay compared to the conventional CSA-based model by effectively utilizing server memory resources.
-Numerical results also demonstrate that the proposed model achieves a lower largest total delay than start-time optimization and provides greater stability by preventing unnecessary user reassignments compared to run-time optimization.
+We observe that the proposed model achieves a lower largest total delay than start-time optimization and provides greater stability by preventing unnecessary user reassignments compared to run-time optimization.
 }
 \end{abstract}
 % \vspace{-0.3cm}
@@ -132,7 +132,7 @@ Some studies~\cite{OSA_Kawabata_5,OSA_Kawabata_6} have examined the advantages a
 Ensuring correct event sequencing while maintaining parallelism remains a key challenge in such systems~\cite{OSA_Kawabata_7,OSA_Kawabata_8}. 
 To address this, various synchronization algorithms have been introduced, which are broadly classified into conservative synchronization algorithms (CSA) and optimistic synchronization algorithms (OSA)~\cite{OSA_Kawabata_9}. 
 CSA enforces event order by associating time information with each event, thereby preserving the correct sequence. 
-In contrast, OSA allows events to be processed without prior order enforcement; if an out-of-order event is detected, the system performs a rollback to guarantees the event order and corrects its results.
+In contrast, OSA allows events to be processed without prior order enforcement; if an out-of-order event is detected, the system performs a rollback to guarantee the event order and corrects its results.
 These synchronization techniques are particularly relevant for delay-sensitive applications, including network-based shooter games~\cite{OSA_Kawabata_10} and transaction management systems~\cite{OSA_Kawabata_11}.
 While the rollback mechanism enables flexible event processing, it requires servers to retain extensive historical state information, potentially leading to higher memory usage than CSA-based methods.
 }
@@ -151,8 +151,8 @@ Since DSP with CSA allows users to connect to closer servers, $D_\mathrm{U}^{\ma
 }
 
 \blue{
-The work~\cite{OSA_Kawabata_2021} introduced an DSP model with OSA.
-When a server receives an event from its assigned user, it rolls back its status to the time when the event was occurred and processes the event and sends the result back to the user immediately.
+Study~\cite{OSA_Kawabata_2021} introduced a DSP model with OSA.
+When a server receives an event from its assigned user, it rolls back its status to the time when the event occurs, processes the event, and sends the result back to the user immediately.
 Due to the rollback mechanism, each server must retain the application's previous state until the latest possible arrival of any delayed event.
 The total maximum delay for DSP with OSA is $2D_\mathrm{U}^{\max}$;
 it is the round-trip delay between a user and its assigned server, where the maximum is taken over all user-server pairs. 
@@ -170,7 +170,7 @@ Since single-server failures are statistically more prevalent than concurrent mu
 
 \blue{
 A common approach for handling server allocation under single-server failures is to first decide the optimal assignment assuming no failures, and then update the allocation as failures occur. 
-In this context, start-time optimization (SO) reallocates only users connected to failed server to minimize the total delay in each failure scenario. 
+In this context, start-time optimization (SO) reallocates only users connected to a failed server to minimize the total delay in each failure scenario. 
 In contrast, run-time optimization (RO) allows all users to be reassigned to any available server after a failure, seeking to minimize the total delay for each scenario. 
 While SO ensures the best allocation when no failures are present, it may not provide the lowest delay in the presence of failures. 
 RO, on the other hand, always achieves the minimum delay for each failure scenario, but it may unnecessarily reassign users whose servers remain operational, potentially causing instability due to avoidable service interruptions.
@@ -182,20 +182,20 @@ PSO was originally introduced in the context of network optimization~\cite{5_9_1
 In PSO, user-to-server assignments are determined in advance to minimize the largest total delay across all possible failure scenarios. 
 To maintain service stability, PSO, like SO, restricts the reassignment of users whose servers remain operational, ensuring that only users affected by a server failure are reallocated. 
 % サービスの中断をなくし，全ての故障シナリオを考えた時の全体の遅延時間を最小化するためにはPSOが有効である．
-PSO effectively minimizes the largest total delay accross all failure scenarios while avoiding unnecessary service interruptions.
+PSO effectively minimizes the largest total delay across all failure scenarios while avoiding unnecessary service interruptions.
 }
 
 \blue{
-A questions arises: 
+A question arises: 
 % モデルを開発することができるのか
 Can we develop a model for the OSA-based server allocation problem with PSO against single-server failures (OSA-PSO)?
 }
 
 \blue{
-This paper proposes a OSA-based server allocation model with PSO against single-server failures.
+This paper proposes an OSA-based server allocation model with PSO against single-server failures.
 The proposed model preventively assigns users to servers to minimize the largest total delay among all failure scenarios while satisfying the maximum status holding time constraints.
 To suppress instability, the proposed model does not allow users connected to non-failed servers to be reallocated to other non-failed servers when a server fails.
-We formulate the proposed model as an ILP problem.
+We formulate the proposed model as an integer linear programming (ILP) problem.
 We prove that the decision version of OSA-PSO is NP-complete.
 % CSAに比べてdelayが削減される
 Numerical results show that the delay of the proposed OSA-based server allocation model can be reduced compared to that of the conventional CSA-based server allocation model.
@@ -221,7 +221,7 @@ Fig.~\ref{fig:OSA_allocation} illustrates two different server allocations with 
 In allocation~1 (Fig.~\ref{fig:OSA_allocation}(a)), the resulting delay is $8$ ($=4 \times 2$), while in allocation~2 (Fig.~\ref{fig:OSA_allocation}(b)), the delay increases to $14$ ($=7 \times 2$). 
 The corresponding maximum status holding times are $14$ ($=4+10$) for allocation~1 and $12$ ($=7+5$) for allocation~2. 
 Although allocation~1 allows user~1 to connect to the nearest server, it results in a larger maximum status holding time compared to allocation~2. 
-When $\min(H_{\rm APL}, H_s) \geq 14$, allocation~1 is preferable to allocation~2; $s$ used in $H_s$ is applied for all servers in the network.
+When $\min(H_{\rm APL}, H_s) \geq 14$, allocation~1 is preferable to allocation~2; the index of $s$ used in $H_s$ is applied for all servers in the network.
 If $12 \leq \min(H_{\rm APL}, H_s) < 14$, only allocation~2 satisfies the status holding time constraint, making allocation~1 infeasible. 
 For $\min(H_{\rm APL}, H_s) < 12$, neither allocation is feasible. 
 These observations highlight the importance of selecting an appropriate allocation that minimizes end-to-end delay while ensuring compliance with the maximum status holding time constraint in OSA.
@@ -250,12 +250,12 @@ Since this paper focuses on the single-server failures in OSA with PSO, the mode
 \blue{
 The approach in~\cite{5_9_Masuda2020} considered single-server failures in the context of CSA with PSO.
 Figure~\ref{fig:CSA_SOROPSO} provides an overview of CSA-based server allocation with SO, RO, and PSO.
-Let $f$ denotes the failed server.
+Let $f$ denote the failed server.
 When there is no failure ($f = 0$), SO achieves the minimum total delay among feasible allocations.
 However, SO restricts reassignment to only those users whose server has failed, which can result in a larger total delay compared to PSO when $f = 1$ or $2$.
 For instance, under SO, if user~3 is initially assigned to server~2 for $f = 0$, then upon failure of server~1 ($f = 1$), user~3 must be reassigned to server~2, even if this does not yield the lowest possible delay.
 In contrast, RO always yields the minimum total delay for any failure scenario, but it may lead to instability, as users may be reassigned to different servers even when their original server remains operational.
-For example, under RO, user~3 may be assigned to server~2 when $f = 0$, but reassigned to server~3 when $f = 1$, despite server~2 not having failed.
+For example, under RO, user~3 may be assigned to server~2 when $f = 0$, but reassigned to server~3 when $f = 1$, even though server~2 has not failed.
 PSO addresses this by optimizing the allocation across all failure scenarios, thereby reducing the total delay while avoiding instability.
 Nevertheless, the model in~\cite{5_9_Masuda2020} does not incorporate constraints on the maximum status holding time, and thus cannot be directly applied to scenarios where such constraints are required.
 }
@@ -290,7 +290,7 @@ For any user $u \in V_{\rm{U}}$ and server $s \in V_{\rm{S}}$, and for each fail
 Similarly, for any pair of servers $s, t \in V_{\rm{S}}$ with $s \neq t$, and for each $f \in F$, we have $x_{stf} \le y_{sf}$ and $x_{stf} \le y_{tf}$. 
 Let $D_{\mathrm{U}f}$ be the largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$.
 Let $D$ represent the largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios.
-We define OSA-PSO as an optimization problem to minimize $D$.
+We define OSA-PSO as an optimization problem aimed at minimizing $D$.
 % 
 \begin{table}[tb]
     \centering
@@ -309,7 +309,7 @@ We define OSA-PSO as an optimization problem to minimize $D$.
         & $d(u,s)$ & Delay between user~$u \in V_{\rm{U}}$ and $s \in V_{\rm{S}}$. \\
         & $d(s,t)$ & Delay between server~$s \in V_{\rm{S}}$ and $t \in V_{\rm{S}}$. \\ 
         & $F$ & Set of possible failure scenarios, where $f = 0$ corresponds to the scenario with no server failure, and each $f \in F \setminus \{0\}$ corresponds to the failure of server~$f$. \\
-        & $H_{\rm APL}$ & Maximum status holding time of an aplication. \\
+        & $H_{\rm APL}$ & Maximum status holding time of an application. \\
         & $H_s$ & Maximum status holding time of server $s$. \\ \hline
         Decision parameters & $D$ & The largest total delay of $2D_{\mathrm{U}f}$ taken over all possible failure scenarios. \\
         & $D_{\mathrm{U}f}$ & Largest $d(u,s)$ among all $(u,s) \in E_{\rm{U}}$ used in scenario $f \in F$. \\
@@ -317,7 +317,7 @@ We define OSA-PSO as an optimization problem to minimize $D$.
         & $y_{sf}$ & Binary. $y_{sf} = 1$ if server~$s \in V_{\rm{S}}$ is selected under failure scenario~$f \in F$; $y_{sf} = 0$ otherwise. \\ \hline
     \end{tabular}
 \end{table}
-Table~\ref{tbl:notation_OSA-PSO} summarises the given parameters and decision parameters used in the problem.
+Table~\ref{tbl:notation_OSA-PSO} summarizes the given parameters and decision parameters used in the problem.
 
 % \vspace{-0.5cm}
 \subsection{Formulation of optimization problem}
@@ -436,8 +436,8 @@ D-OSA-PSO is NP-complete.
     \item All server nodes are linked with edges.
     \begin{itemize}
       \item The length of edges between $V_{ij}$ and $V_{i'j'}$ are set to one whenever $i \neq i'$, and $V_{ij}$ and $V_{i'j'}$ are not negations to each other, which means that the edge represents two nodes corresponding to elements that have a compatible true assignment.
-      \item The length of edges between $V_{\rm Z}$ and $V_{ij}$ are set to one.
-      \item Otherwise, the length of edges are set to two.
+      \item Each length of edges between $V_{\rm Z}$ and $V_{ij}$ is set to one.
+      \item Otherwise, the length of edges is set to two.
     \end{itemize}
     \item Each user node is linked with edges that have a length of zero.
     \item We set $M_s = H_s = 1$ for all servers $s \in V_{\rm S}$, and $H_{\rm APL} = 1$. Thus, for every $s \in V_{\rm S}$, we have $\min(H_{\rm APL}, H_s) = 1$.
@@ -453,9 +453,9 @@ The above construction can be performed in time $O(|E_{\rm S}| + |E_{\rm U}|)$.
   Suppose that there exists a true 3-SAT assignment. 
   We consider three cases for at most one server failure in the following.
   First, if server node $V_{\rm Z}$ fails,
-  we can choose $k$ nodes from $V_{ij}$, one corresponding to true assignment from each clause, which are all interconnected with edges of length one.
+  we can choose $k$ nodes from $V_{ij}$, one corresponding to a true assignment from each clause, which are all interconnected with edges of length one.
   We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
-  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, $2D_{\mathrm{U}f}$  is two and the required status holding time is one.
+  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, $2D_{\mathrm{U}f}$  is two, and the required status holding time is one.
   Second, if a server node $V_{ij}$ fails,
   we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.
   Third, if no server fails, 
@@ -487,8 +487,8 @@ Distances for direct links between servers and links between servers and users a
 The distance $d_\mathrm{AB}$ between two locations A and B, given their longitudes $x_\mathrm{A}$, $x_\mathrm{B}$ and latitudes $y_\mathrm{A}$, $y_\mathrm{B}$, is computed as follows:
 $d_\mathrm{AB} = R \arccos\left( \sin y_\mathrm{A} \sin y_\mathrm{B} + \cos y_\mathrm{A} \cos y_\mathrm{B} \cos(x_\mathrm{A} - x_\mathrm{B}) \right)$,
 where $R$ denotes the equatorial radius~\cite{Zohora2018}.
-All experiments are performed on a PC with an Intel(R) Core(TM) i7-7700 3.60GHz processor and 32 GB of memory.
-We solve ILP problems using CPLEX 12.10.0.0\cite{CPLEX}.
+All experiments are performed on a PC with an Intel(R) Core(TM) i7-7700 3.60~GHz processor and 32 GB of memory.
+We solve ILP problems using CPLEX 12.10.0.0~\cite{CPLEX}.
 \begin{figure}[t]
   \begin{center}
       \begin{tabular}{cc}
@@ -737,7 +737,7 @@ For the next step for SO, we solve the optimization problem for each failure sce
 % \end{subequations}
 Equation~\eqref{OSA-SO_b-d,g-n} enforces the same constraints as~\eqref{OSA-PSO_b}--\eqref{OSA-PSO_d} and~\eqref{OSA-PSO_g}--\eqref{OSA-PSO_n}, applied for the single failure scenario $F = \{f\}$.
 While the SO formulation closely resembles that of PSO, there are notable distinctions between the two approaches.
-In PSO, the assignments for all failure scenarios including the scenario with no server failure are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n}, treating $x_{us0}$ in~\eqref{OSA-PSO_f} as a variable to be determined.
+In PSO, the assignments for all failure scenarios, including the scenario with no server failure, are jointly optimized by solving the ILP formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n}, treating $x_{us0}$ in~\eqref{OSA-PSO_f} as a variable to be determined.
 In contrast, SO first computes the assignment for the no-failure scenario by solving the ILP formulation~\eqref{OSA-SO-f0_a}--\eqref{OSA-SO-f0_b}, and subsequently, for each failure scenario, determines the reassignment by solving the ILP formulation~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}, using the previously obtained $x^0_{us}$ in~\eqref{OSA-SO_i} as a given parameter.
 For RO, the optimization problem for each failure scenario $f \in F \setminus \{0\}$ is formulated in the same way as SO, except that constraint~\eqref{OSA-SO_i} is omitted from~\eqref{OSA-SO_a}--\eqref{OSA-SO_i}.
 
@@ -759,7 +759,7 @@ $\nu = \frac{\sum_{f \in F \setminus \{0\}}\nu_f}{|F| - 1}$.
 \subsubsection{Evaluation}
 Figs.~\ref{fig:OSA_alpha_beta_JPN} and~\ref{fig:OSA_alpha_beta_COST} illustrate how $\alpha$ and $\beta$ vary as the number of users increases in the JPN Kanto region and COST~239 networks, respectively.
 % average: alpha JPN:0.1956 COST:0.0070 total:0.1013, beta JPN:0.3829 COST:0.1048 total:0.2439
-It can be seen that $\alpha$ tends to grow as the number of users increases in both networks, suggesting that PSO achieves larger reductions in total delay compared to SO as the user count rises.
+It can be observed that $\alpha$ increases as the number of users rises in both networks, indicating that PSO achieves larger reductions in total delay compared to SO as the user count increases.
 On average, $\alpha$ is 0.10, with the highest observed value for a failure scenario at one trial being 0.41 in JPN Kanto.
 It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ in the JPN Kanto, with the overall average value of $\beta$ being 0.24.
 
@@ -817,7 +817,7 @@ As the number of users grows in both networks, $\nu$ also rises, suggesting that
 It is found that solving the PSO formulation~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} for $|V_{\rm U}|=30$ in COST~239 requires 6.33~[s].
 Under the same conditions, SO and RO need $2.96 \times 10^{-2}$~[s] to compute the initial assignment without failures.
 For each failure scenario, the reassignment step takes $3.92 \times 10^{-3}$~[s] for SO and $2.39 \times 10^{-2}$~[s] for RO, resulting in total computation times of 0.073~[s] for SO and 0.293~[s] for RO.
-These results indicate that PSO requires more computational time than SO and RO, as it solves a larger-scale optimization problem simultaneously.
+These results indicate that PSO requires more computational time than SO and RO, as it simultaneously solves a larger-scale optimization problem.
 Additionally, RO is slower than SO because it reassigns all users in each failure scenario, whereas SO only reallocates users whose servers have failed.
 
 % この段落は最終版では外して，extended versionで追加してもいいかも．
@@ -836,13 +836,13 @@ Furthermore, PSO effectively eliminates instability due to unnecessary user reas
 \label{sec:conclusion}
 
 \blue{
-We poposed the optimistic synchronization-based server allocation model with preventive start-time optimization (OSA-PSO) against single-server failures.
+We proposed the optimistic synchronization-based server allocation model with preventive start-time optimization (OSA-PSO) against single-server failures.
 We formulated the proposed model as an ILP problem, which minimizes the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints.
 We proved that the decision version of the problem is NP-complete.
-We conpared the proposed OSA-PSO model with the conventional conservative synchronization-based server allocation model with PSO (CSA-PSO) and showed that OSA-PSO achieves a lower delay than CSA-PSO when the maximum status holding time is large.
+We compared the proposed OSA-PSO model with the conventional conservative synchronization-based server allocation model with PSO (CSA-PSO) and showed that OSA-PSO achieves a lower delay than CSA-PSO when the maximum status holding time is large.
 We also compared the proposed OSA-PSO model with two baselines, start-time optimization (SO) and run-time optimization (RO).
 The results showed that the proposed model outperforms SO by jointly optimizing across all failure scenarios, achieving an average improvement of 0.10 in the largest total delay and up to 0.41 in the worst case.
-The results also showed that the proposed model achieves a largest total delay nearly equivalent to that of RO, while completely eliminating instability due to unnecessary user reassignments, which RO causes in 41\% of users per failure scenario.
+The results also showed that the proposed model achieves the largest total delay, nearly equivalent to that of RO, while completely eliminating instability due to unnecessary user reassignments, which RO causes in 41\% of users per failure scenario.
 }
 
 \bibliography{IEEEabrv,Oda_optimistic_PSO}
