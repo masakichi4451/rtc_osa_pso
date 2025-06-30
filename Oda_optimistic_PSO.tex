@@ -142,7 +142,7 @@ The work in~\cite{2Kawabata2017} formulated a server assignment strategy to mini
 For comparison, the total delay in CP is $2D_\mathrm{U}^{\max}$. 
 Since DSP with CSA allows users to connect to closer servers, $D_\mathrm{U}^{\max}$ is typically reduced compared to CP, leading to a lower overall delay.
 
-\blue{Study~\cite{OSA_Kawabata_2021,OSA_Kawabata_13_Kawabata2020}} introduced a DSP model with OSA.
+Study~\cite{OSA_Kawabata_2021,OSA_Kawabata_13_Kawabata2020} introduced a DSP model with OSA.
 When a server receives an event from its assigned user, it rolls back its status to the time when the event occurs, processes the event, and sends the result back to the user immediately.
 Due to the rollback mechanism, each server must retain the application's previous state until the latest possible arrival of any delayed event.
 The total maximum delay for DSP with OSA is $2D_\mathrm{U}^{\max}$;
@@ -365,7 +365,7 @@ Equation~\eqref{OSA-PSO_h} guarantees that a server is considered active if it s
 Equations~\eqref{OSA-PSO_i}--\eqref{OSA-PSO_k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
 Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to each server in each failure scenario. Equations~\eqref{OSA-PSO_m} and~\eqref{OSA-PSO_n} express the range of decision variables $x_{ijf}$ and $y_{sf}$, respectively.
 
-Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX}, Gurobi~\cite{Gurobi}\blue{, SCIP~\cite{SCIP}, GLPK~\cite{GLPK}, and COIN-OR CBC~\cite{CBC}}.
+Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX}, Gurobi~\cite{Gurobi}, SCIP~\cite{SCIP}, GLPK~\cite{GLPK}, and COIN-OR CBC~\cite{CBC}.
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
 
@@ -420,31 +420,26 @@ D-OSA-PSO is NP-complete.
   \end{itemize}
 The above construction can be performed in time $O(|E_{\rm S}| + |E_{\rm U}|)$.
 
-%  \blue{
-%  We set the capacity of each server node $s\in V_{\rm S}$,  $M_s$, to one to complete the D-OSA-PSO instance.  We set $\min(H_{\rm APL},H_s)$ to one for all servers $s \in V_{\rm{S}}$.}
 
-  The D-OSA-PSO instance is feasible if and only if there exists a satisfiable 3-SAT assignment, which is shown below.
+The D-OSA-PSO instance is feasible if and only if there exists a satisfiable 3-SAT assignment, which is shown below.
 
-  Suppose that there exists a true 3-SAT assignment. 
-  We consider three cases for at most one server failure in the following.
-  First, if server node $V_{\rm Z}$ fails,
-  we can choose $k$ nodes from $V_{ij}$, one corresponding to a true assignment from each clause, which are all interconnected with edges of length one.
-  We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
-  Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, $2D_{\mathrm{U}f}$  is two, and the required status holding time is one.
-  Second, if a server node $V_{ij}$ fails,
-  we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.
-  Third, if no server fails, 
-  we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.
-  Hence, the largest total delay $D = \max_{f \in F}{2D_{\mathrm{U}f}}$ is two, which satisfies $D \leq h$, and the required status holding time among all server failure scenarios is one.
-  Therefore, the D-OSA-PSO instance is feasible.
+Suppose that there exists a true 3-SAT assignment. 
+We consider three cases for at most one server failure in the following.
+First, if server node $V_{\rm Z}$ fails, we can choose $k$ nodes from $V_{ij}$, one corresponding to a true assignment from each clause, which are all interconnected with edges of length one.
+We can assign the $k$ user nodes to the $k$ selected server nodes under this failure scenario.
+Since no edge with a length greater than one in $G$ is used and edges between user nodes and server nodes have a length of zero, $2D_{\mathrm{U}f}$  is two, and the required status holding time is one.
+Second, if a server node $V_{ij}$ fails, we can reassign the user nodes assigned to the failed server node to server node $V_{\rm Z}$, which ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.
+Third, if no server fails, we can assign each user node to the same server node as in the case where server node $V_{\rm Z}$ fails, which also ensures that $2D_{\mathrm{U}f}$ is two and the required status holding time is one.
+Hence, the largest total delay $D = \max_{f \in F}{2D_{\mathrm{U}f}}$ is two, which satisfies $D \leq h$, and the required status holding time among all server failure scenarios is one.
+Therefore, the D-OSA-PSO instance is feasible.
 
-  Conversely, assume that an instance of D-OSA-PSO is yes.
-  When server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
-  From the definition of $G$, these server nodes correspond to variables with compatible true assignments.
-  Thus, assigning the value true to the variables associated with these $k$ nodes ensures that every clause is satisfied.
-  Therefore, the corresponding instance of 3-SAT is yes.
+Conversely, assume that an instance of D-OSA-PSO is yes.
+When server node $V_{\rm Z}$ fails, there exists a set of $k$ fully interconnected server nodes with edges of length one between $V_{ij}$.
+From the definition of $G$, these server nodes correspond to variables with compatible true assignments.
+Thus, assigning the value true to the variables associated with these $k$ nodes ensures that every clause is satisfied.
+Therefore, the corresponding instance of 3-SAT is yes.
 
-  Since we have shown a polynomial-time reduction from 3-SAT to D-OSA-PSO, and D-OSA-PSO is in NP, it follows that D-OSA-PSO is NP-complete.
+Since we have shown a polynomial-time reduction from 3-SAT to D-OSA-PSO, and D-OSA-PSO is in NP, it follows that D-OSA-PSO is NP-complete.
 \end{proof}
 
 % \vspace{-0.3cm}
