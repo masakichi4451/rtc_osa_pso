@@ -97,7 +97,7 @@ $^\dag$Kyoto University, Kyoto, Japan\ \ $^\ddag$Toyohashi University of Technol
 \begin{abstract}
 Real-time applications require low latency and strict event ordering.  
 Distributed server processing is effective for this purpose, and there are two synchronization algorithms: a conservative synchronization algorithm (CSA) and an optimistic synchronization algorithm (OSA).
-OSA allows servers to process events without prior order enforcement, rolling back their status to the time of the event occurrence if an out-of-order event is detected, \magenta{which improves delay performance compared to CSA.}
+OSA allows servers to process events without prior order enforcement, rolling back their status to the time of the event occurrence if an out-of-order event is detected, which improves delay performance compared to CSA.
 While prior studies have considered OSA, they have not incorporated the impact of server failures. 
 This paper proposes an OSA-based server allocation model for delay-sensitive applications with preventive start-time optimization (PSO) under single-server failures.
 The proposed model minimizes the largest total delay across all failure scenarios while satisfying the maximum status holding time constraints with PSO under single-server failures.
@@ -361,7 +361,7 @@ Equation~\eqref{OSA-PSO_f} ensures that, for any server that remains operational
 Equation~\eqref{OSA-PSO_g} ensures that, for every server $s \in V_{\rm{S}}$, the maximum status holding time does not surpass the minimum of $H_{\rm APL}$ and $H_s$.
 Equation~\eqref{OSA-PSO_h} guarantees that a server is considered active if it serves at least one user.
 Equations~\eqref{OSA-PSO_i}--\eqref{OSA-PSO_k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
-Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to \magenta{a server used in each failure scenario.} Equations~\eqref{OSA-PSO_m} and~\eqref{OSA-PSO_n} express the range of decision variables $x_{ijf}$ and $y_{sf}$, respectively.
+Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to a server used in each failure scenario. Equations~\eqref{OSA-PSO_m} and~\eqref{OSA-PSO_n} express the range of decision variables $x_{ijf}$ and $y_{sf}$, respectively.
 
 Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX}, Gurobi~\cite{Gurobi}, SCIP~\cite{SCIP}, GLPK~\cite{GLPK}, and COIN-OR CBC~\cite{CBC}.
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
@@ -528,14 +528,14 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
 \end{figure}
 When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO_g}.
 % ユーザ-サーバ間の遅延が少し増えたとしても，最も遠いサーバとの遅延である$x_{usf}d(u,s) + x_{stf}d(s,t)$が小さくなるようなサーバを選択する必要がある．（川端先生の助言を受けて修正）
-In such cases, to satisfy~\eqref{OSA-PSO_g}, %\blue{a user $u$ must select a server $s$ that reduces the delay to the farthest server $t$, $x_{usf}d(u,s) + x_{stf}d(s,t)$, even if it results in a slight increase in the user-server delay $x_{usf}d(u,s)$}.
-\magenta{a user~$u$ that contributes to the objective value in~\eqref{OSA-PSO_a} must select a more distant server $s$ to minimize it, which results in a slight increase in the user-server delay $x_{usf}d(u,s)$.}
+%\blue{a user $u$ must select a server $s$ that reduces the delay to the farthest server $t$, $x_{usf}d(u,s) + x_{stf}d(s,t)$, even if it results in a slight increase in the user-server delay $x_{usf}d(u,s)$}.
+In such cases, \magenta{a user~$u$ restricted by~\eqref{OSA-PSO_g} must select a more distant server $s$ while minimizing the objective value in~\eqref{OSA-PSO_a}, which results in a slight increase in the user-server delay $x_{usf}d(u,s)$.}
 This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for OSA.
 Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
 This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
 As a result, when the farthest users in both the 30-user and 70-user cases are located at comparable distances from the servers, the maximum delay remains nearly unchanged.
 % ユーザ数やネットワークトポロジによらず、\min(H_{\rm APL}, H_s)の許容値が大きくなることで、$x_{usf}d(u,s) + x_{stf}d(s,t)$の最大値を決定づけるユーザがより近いサーバを選択可能（2D_{\mathrm{U}f}を小さくできる）となる．（川端先生の助言で追加）
-\magenta{Regardless of the number of users or the network topology, increasing an admissible value for $\min(H_{\rm APL}, H_s)$ allows the user that determines the maximum value of $x_{usf}d(u,s) + x_{stf}d(s,t)$ to select a closer server, thereby reducing $2D_{\mathrm{U}f}$.}
+Regardless of the number of users or the network topology, increasing an admissible value for $\min(H_{\rm APL}, H_s)$ allows the user that determines the maximum value of $x_{usf}d(u,s) + x_{stf}d(s,t)$ to select a closer server, thereby reducing $2D_{\mathrm{U}f}$.
 From the above results, it can be concluded that regardless of the number of users or the network topology, the proposed OSA-PSO model is effective in reducing delay when $H_{\rm APL}$ is large.
 
 % ここからcomputation timeの評価
