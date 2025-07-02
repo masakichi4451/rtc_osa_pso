@@ -529,7 +529,7 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
 When $H_{\rm APL}$ is reduced, assigning each user to their closest server may violate the maximum status holding time constraint specified in~\eqref{OSA-PSO_g}.
 % ユーザ-サーバ間の遅延が少し増えたとしても，最も遠いサーバとの遅延である$x_{usf}d(u,s) + x_{stf}d(s,t)$が小さくなるようなサーバを選択する必要がある．（川端先生の助言を受けて修正）
 %\blue{a user $u$ must select a server $s$ that reduces the delay to the farthest server $t$, $x_{usf}d(u,s) + x_{stf}d(s,t)$, even if it results in a slight increase in the user-server delay $x_{usf}d(u,s)$}.
-In such cases, \magenta{a user~$u$ restricted by~\eqref{OSA-PSO_g} must select a more distant server $s$ while minimizing the objective value in~\eqref{OSA-PSO_a}, which results in a slight increase in the user-server delay $x_{usf}d(u,s)$.}
+In such cases, a user~$u$ restricted by~\eqref{OSA-PSO_g} must select a more distant server $s$ while minimizing the objective value in~\eqref{OSA-PSO_a}, which results in a slight increase in the user-server delay $x_{usf}d(u,s)$.
 This results in an increase in $D_{\mathrm{U}f}$, leading to a larger delay for OSA.
 Figs.~\ref{fig:delay_OSA_CSA_hapl_JPN} and~\ref{fig:delay_OSA_CSA_hapl_COST} show that the delay values for 30 and 70 users are quite similar.
 This is because the overall delay is determined by the user-server pair with the maximum distance; thus, the location of the most distant user becomes the dominant factor in the total delay.
