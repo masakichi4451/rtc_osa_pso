@@ -1454,7 +1454,7 @@ FUNCTION {format.book.title.edition}
     { this.to.prev.status
       this.status.std
       select.language
-      emphasize
+      % emphasize ← 削除！
       edition empty$ 'skip$
         { ", " *
           edition
