@@ -212,7 +212,7 @@ Since this paper focuses on the single-server failures in OSA with PSO, the mode
       %\begin{tabular}{c}
       \includegraphics[width=0.99\columnwidth]{./fig/OSA_allocation.pdf}
   \end{center}
-    % \vspace{-0.4cm}
+    \vspace{-0.4cm}
   \caption{Example of server allocations with OSA.}
   \label{fig:OSA_allocation}
 \end{figure}
@@ -222,7 +222,7 @@ Since this paper focuses on the single-server failures in OSA with PSO, the mode
       %\begin{tabular}{c}
       \includegraphics[width=0.99\columnwidth]{./fig/CSA_SOROPSO.pdf}
   \end{center}
-    % \vspace{-0.4cm}
+    \vspace{-0.4cm}
   \caption{Example of CSA-based server allocation with SO, RO, and PSO.}
   \label{fig:CSA_SOROPSO}
 \end{figure}
@@ -404,7 +404,7 @@ D-OSA-PSO is NP-complete.
     \begin{center}
       \includegraphics[width=0.8\columnwidth]{./fig/fig_3SAT_RTC.pdf}
     \end{center}
-      % \vspace{-0.3cm}
+      \vspace{-0.3cm}
     \caption{Graph $G$ corresponding to 3-SAT with three clauses.}
     \label{fig:3SAT_RTC}
   \end{figure}
@@ -470,7 +470,7 @@ We solve ILP problems using CPLEX 12.10.0.0~\cite{CPLEX}.
       (a) JPN Kanto & (b) COST~239
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
+      \vspace{-0.3cm}
   \caption{Potential server locations in JPN Kanto and COST~239.}
   \label{fig:ServerLocation}
 \end{figure}
@@ -515,7 +515,7 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
+      \vspace{-0.3cm}
   \caption{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}
   \label{fig:delay_OSA_CSA_hapl_JPN}
 \end{figure}
@@ -527,7 +527,7 @@ When $H_{\rm APL} \geq 0.9$~ms for JPN Kanto and $H_{\rm APL} \geq 8.0$~ms for C
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
+      \vspace{-0.3cm}
   \caption{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_{\rm APL}$.}
   \label{fig:delay_OSA_CSA_hapl_COST}
 \end{figure}
@@ -555,6 +555,7 @@ Since user locations are typically known beforehand, this computation can be per
 \begin{table}[t]
   \caption{Comparison of computation time for each model at JPN Kanto.}
   \label{tab:ComputationTime_OSA_CSA_hapl_JPN}
+  \vspace{-0.3cm}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
       \hline
@@ -575,6 +576,7 @@ Since user locations are typically known beforehand, this computation can be per
 \begin{table}[t]
   \caption{Comparison of computation time for each model at COST~239.}
   \label{tab:ComputationTime_OSA_CSA_hapl_COST}
+  \vspace{-0.3cm}
   \begin{center}
     \begin{tabular}{c|cccccc|c}
       \hline
@@ -600,6 +602,7 @@ We set values of $H_s$ for JPN Kanto and COST~239, as shown in Table~\ref{tab:co
 \begin{table}[t]
   \caption{Values of $H_s$ defined in JPN Kanto and COST~239.}
   \label{tab:condition_hs_JPN_COST}
+  \vspace{-0.3cm}
   \begin{center}
     \begin{tabular}{c|c}
       \hline
@@ -626,7 +629,7 @@ These findings suggest that the proposed model effectively utilizes server memor
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-       \vspace{-0.2cm}
+       \vspace{-0.3cm}
   \caption{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_JPN}
 \end{figure}
@@ -638,7 +641,7 @@ These findings suggest that the proposed model effectively utilizes server memor
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-       \vspace{-0.2cm}
+       \vspace{-0.3cm}
   \caption{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_COST}
 \end{figure}
@@ -748,12 +751,12 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       (a) $\alpha$ & (b) $\beta$
       \end{tabular}
   \end{center}
-      \vspace{-0.2cm}
+      \vspace{-0.3cm}
   \caption{Evaluation of PSO with SO when the number of users varies in JPN Kanto region.}
   \label{fig:OSA_alpha_beta_JPN}
 \end{figure}
 
-\begin{figure}[tb]
+\begin{figure}[t]
   \begin{center}
       \begin{tabular}{cc}
       \includegraphics[width=0.46\columnwidth]{./fig/alpha_COST_hapl_1.1_001_fonttypeType1.pdf} &
@@ -761,7 +764,7 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       (a) $\alpha$ & (b) $\beta$
       \end{tabular}
   \end{center}
-      \vspace{-0.2cm}
+      \vspace{-0.3cm}
   \caption{Evaluation of PSO with SO when the number of users varies in COST~239.}
   \label{fig:OSA_alpha_beta_COST}
 \end{figure}
@@ -775,6 +778,7 @@ As the number of users grows in both networks, $\nu$ also rises, suggesting that
 \begin{table}[t]
   \caption{Evaluation of PSO with RO when the number of users varies.}
   \label{tab:OSA-PSO_gamma_nu}
+  \vspace{-0.3cm}
   \begin{center}
     \begin{tabular}{c|cc|cc}
       \hline
