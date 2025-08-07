@@ -90,7 +90,7 @@
 
 \title{\Large
 Optimistic Synchronization-Based Server Allocation with Preventive Start-Time Optimization for Delay-Sensitive Applications Under Server Failure
-\thanks{This work was supported in part by the Japan Society for the Promotion of Science (JSPS) KAKENHI, under Grant Number 23K28072.}
+\thanks{This work was supported in part by the Japan Society for the Promotion of Science (JSPS) KAKENHI, under Grant Numbers 25K22800 and 25KF0055.}
 }
 \author{Masaki Oda$^\dag$, Akio Kawabata$^\ddag$, and Eiji Oki$^\dag$\\
 $^\dag$Kyoto University, Kyoto, Japan\ \ $^\ddag$Toyohashi University of Technology, Aichi, Japan} 
@@ -193,7 +193,7 @@ In this model, when a user has the option to connect to multiple servers, the re
 The end-to-end delay is defined as the round-trip time between a user and their assigned server. 
 To minimize this delay, it is necessary to select server assignments while also considering constraints on the maximum status holding time, which are determined by application requirements and the memory capacity of each server. 
 Specifically, the time a server must wait for the latest possible event from its most distant user should not exceed the maximum status holding time. 
-Let $H_{\rm APL}$ represents the maximum status holding time of an application, and $H_s$ denote the maximum status holding time of server $s$. 
+Let $H_{\rm APL}$ represent the maximum status holding time of an application, and $H_s$ denote the maximum status holding time of server $s$. 
 Both $H_{\rm APL}$ and $H_s$ are predetermined based on application design and the available memory resources at each server.
 
 Fig.~\ref{fig:OSA_allocation} illustrates two different server allocations with OSA in the same network. 
@@ -625,7 +625,7 @@ These findings suggest that the proposed model effectively utilizes server memor
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
+       \vspace{-0.2cm}
   \caption{Delay for JPN Kanto when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_JPN}
 \end{figure}
@@ -637,7 +637,7 @@ These findings suggest that the proposed model effectively utilizes server memor
       (a) 30 users & (b) 70 users
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
+       \vspace{-0.2cm}
   \caption{Delay for COST~239 when $|V_{\rm U}| = 30, 70$ depending on $H_s$.}
   \label{fig:delay_OSA_CSA_hs_COST}
 \end{figure}
@@ -747,8 +747,8 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       (a) $\alpha$ & (b) $\beta$
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
-  \caption{Evalutaion of PSO with SO when the number of users varies in JPN Kanto region.}
+      \vspace{-0.2cm}
+  \caption{Evaluation of PSO with SO when the number of users varies in JPN Kanto region.}
   \label{fig:OSA_alpha_beta_JPN}
 \end{figure}
 
@@ -760,8 +760,8 @@ It is observed that $\beta$ tends to decline slightly for $|V_{\rm U}| \geq 40$ 
       (a) $\alpha$ & (b) $\beta$
       \end{tabular}
   \end{center}
-      % \vspace{-0.3cm}
-  \caption{Evalutaion of PSO with SO when the number of users varies in COST~239.}
+      \vspace{-0.2cm}
+  \caption{Evaluation of PSO with SO when the number of users varies in COST~239.}
   \label{fig:OSA_alpha_beta_COST}
 \end{figure}
 
