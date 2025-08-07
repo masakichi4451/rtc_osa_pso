@@ -797,12 +797,12 @@ For each failure scenario, the reassignment step takes $3.92 \times 10^{-3}$~[s]
 These results indicate that PSO requires more computational time than SO and RO, as it simultaneously solves a larger-scale optimization problem.
 Additionally, RO is slower than SO because it reassigns all users in each failure scenario, whereas SO only reallocates users whose servers have failed.
 
-% この段落は最終版では外して，extended versionで追加してもいいかも．
-% \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
-We also compare the proposed model and two baselines by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Dependency_on_maximum_status_holding_time}.
-In this case, SO does not yield a feasible solution for $H_{\rm APL} \leq 1.0$ in JPN Kanto and $H_{\rm APL} \leq 9$ in COST~239.
-% これは，maximum status holding timeの制約が厳しくなった際に，SOよりもPSOの方が柔軟に対応することができることを示している．
-This indicates that PSO can adapt more flexibly than SO when the maximum status holding time constraint becomes stricter.
+% % この段落は最終版では外して，extended versionで追加してもいいかも．
+% % \ref{subsec:Evaluation with maximum status holding time}と同様に$H_{\rm APL}$を変化させて，PSO，SO，ROを実行すると，SOはJPNで$H_{\rm APL} \leq 1.0$，COSTで$H_{\rm APL} \leq 9$のとき，実行可能解が存在しなかった．
+% We also compare the proposed model and two baselines by varying the maximum status holding time $H_{\rm APL}$ as in~\ref{subsec:Dependency_on_maximum_status_holding_time}.
+% In this case, SO does not yield a feasible solution for $H_{\rm APL} \leq 1.0$ in JPN Kanto and $H_{\rm APL} \leq 9$ in COST~239.
+% % これは，maximum status holding timeの制約が厳しくなった際に，SOよりもPSOの方が柔軟に対応することができることを示している．
+% This indicates that PSO can adapt more flexibly than SO when the maximum status holding time constraint becomes stricter.
 
 Overall, the proposed PSO model achieves a lower largest total delay than SO by jointly optimizing across all failure scenarios, with an average improvement $\alpha$ of 0.10 and up to 0.41 in the worst case.
 The largest total delay under PSO is nearly equivalent to that of RO.
