@@ -121,7 +121,7 @@ Server allocation, optimistic synchronization algorithm, preventive start-time o
 \section{Introduction}
 \label{sec:introduction}
 
-The advancement of fifth-generation (5G) mobile networks~\cite{DOCOMO_5G} has heightened the demand for real-time applications, such as ticket reservation systems and online gaming, which require both low latency and strict event ordering.
+The advancement of fifth-generation (5G) mobile networks has heightened the demand for real-time applications, such as ticket reservation systems and online gaming, which require both low latency and strict event ordering.
 To ensure event order, traditional approaches rely on centralized processing (CP), where a central server coordinates the sequence of events.
 However, this approach requires waiting for the slowest user response, since the central server must account for the maximum round-trip delay among all users. 
 This leads to an increase in overall delay.
@@ -368,7 +368,7 @@ Equation~\eqref{OSA-PSO_h} guarantees that a server is considered active if it s
 Equations~\eqref{OSA-PSO_i}--\eqref{OSA-PSO_k} indicates $x_{stf} = y_{sf} \cdot y_{tf}$.
 Equation~\eqref{OSA-PSO_l} ensures that at least one user is assigned to a server used in each failure scenario. Equations~\eqref{OSA-PSO_m} and~\eqref{OSA-PSO_n} express the range of decision variables $x_{ijf}$ and $y_{sf}$, respectively.
 
-Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX}, Gurobi~\cite{Gurobi}, SCIP~\cite{SCIP}, and GLPK~\cite{GLPK}.
+Since the optimization problem in~\eqref{OSA-PSO_a}--\eqref{OSA-PSO_n} is an ILP problem, we handle it by using an available ILP solver such as CPLEX~\cite{CPLEX}.
 % 元の分散処理の定式化でy_ffが選ばれないようになってる？
 % zについても同様のこと考慮できてる？
 
