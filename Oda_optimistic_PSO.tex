@@ -1,5 +1,6 @@
 % \documentclass[10pt, letterpaper]{IEEEtran}
 \documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
 \usepackage[dvipdfmx]{color}
 \usepackage[dvipdfmx]{graphicx}
 
@@ -774,7 +775,7 @@ Table~\ref{tab:OSA-PSO_gamma_nu} presents the results for $\gamma$ and $\nu$ as 
 It is found that the average value of $\gamma$ is $2.1 \times 10^{-4}$, indicating that the largest total delay under PSO exceeds that of RO by only 0.021\% overall.
 % average value \nu: JPN:0.448, COST:0.378, total:0.413
 On average, $\nu$ is 0.41, indicating that 41\% of users experience unnecessary disconnections per failure scenario when using RO, while PSO completely eliminates such disconnections.
-As the number of users grows in both networks, $\nu$ also rises, suggesting that PSO becomes increasingly effective at preventing instability with larger users.
+As the number of users grows in both networks, $\nu$ also rises, suggesting that PSO becomes increasingly effective at preventing instability with a larger number of users.
 \begin{table}[t]
   \caption{Evaluation of PSO with RO when the number of users varies.}
   \label{tab:OSA-PSO_gamma_nu}
